@@ -1,23 +1,30 @@
-# Simple pygame program
-
 # Import and initialize the pygame library
 import pygame
 pygame.init()
 
+# Global Variables
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 800
+ISLAND_WIDTH, ISLAND_HEIGHT = 400, 300
+
 # Set up the drawing window
-screen = pygame.display.set_mode([500, 500])
+screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-
-class Player(pygame.sprite.Sprite):
+# Defines a class for the pucks
+class Puck(object):
     def __init__(self):
-        super(Player, self).__init__()
-        self.surf = pygame.Surface((75, 25))
-        self.surf.fill((255, 255, 255))
-        self.rect = self.surf.get_rect()
+        self.position = (0,0)
+        self.color = (0,0,255)
 
-player = Player()
+    def draw(self, surf):
+        pass
+
+# Defines a class for the shooting arrow
+class Arrow(object):
+    def __init__(self):
+        pass
+
+    def draw(self,surf):
+        pass
 
 # Run until the user asks to quit
 running = True
@@ -28,14 +35,14 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    # Fill the background with black
-    screen.fill((0, 0, 0))
+    # Fill the background with blue
+    screen.fill((0, 0, 255))
 
-    # Draw a solid blue circle in the center
-    # pygame.draw.circle(screen, (0, 0, 255), (250, 250), 75)
+    # Draw a solid green rectangle in the center
+    pygame.draw.rect(screen, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
-    # Draw the player on the screen
-    screen.blit(player.surf, (SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+    # Draw the puck on the screen
+    puck = Puck()
 
     # Flip the display
     pygame.display.flip()
