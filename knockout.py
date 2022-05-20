@@ -19,7 +19,7 @@ class Puck(object):
     def set_pos(self, x, y):
         ''' Set the x,y position of the puck '''
         self.position = (x,y)
-    
+
     def set_color(self, color):
         ''' Set the color of the puck '''
         self.color = color
@@ -32,6 +32,15 @@ class Puck(object):
         ''' Draw puck to the surface '''
         pygame.draw.circle(surface, self.color, (self.position[0], self.position[1]), PUCK_RADIUS)
 
+    def get_pos(self):
+        '''Get puck position'''
+        return (self.positions[0],self.position[1])
+
+    def col(self, pucks):
+        '''Checking for collision'''
+        for puck in pucks:
+            col = pygame.sprite.collide_circle(self.t,puck)
+            if col:
 
 # Defines a class for the shooting arrow
 class Arrow(object):
@@ -48,10 +57,10 @@ class Arrow(object):
 def setup_lvl1():
     ''' Sets up screen for level 1'''
     # Draw Water
-    screen.fill((0, 0, 255)) 
+    screen.fill((0, 0, 255))
 
     # Draw Island
-    pygame.draw.rect(screen, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT]) 
+    pygame.draw.rect(screen, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
     # Draw Pucks
     puck1 = Puck()
@@ -89,7 +98,7 @@ def main():
 
     # Set up the level
     setup_lvl1()
-    
+
     # Run until the user asks to quit
     running = True
     while running:
