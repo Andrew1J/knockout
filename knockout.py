@@ -7,7 +7,7 @@ ISLAND_WIDTH, ISLAND_HEIGHT = 400, 400
 PUCK_RADIUS = 10
 
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-
+pucks = pygame.sprite.Group()
 
 # Defines a class for the pucks
 class Puck(object):
@@ -15,6 +15,7 @@ class Puck(object):
         self.position = (250,250)
         self.color = (255,0,255)
         self.onIsland = True
+
 
     def set_pos(self, x, y):
         ''' Set the x,y position of the puck '''
@@ -38,9 +39,7 @@ class Puck(object):
 
     def col(self, pucks):
         '''Checking for collision'''
-        for puck in pucks:
-            col = pygame.sprite.collide_circle(self.t,puck)
-            if col:
+        return (self, pygame.sprite.spritecollideany(self, pucks, collided = None))
 
 # Defines a class for the shooting arrow
 class Arrow(object):
@@ -64,6 +63,7 @@ def setup_lvl1():
 
     # Draw Pucks
     puck1 = Puck()
+    pucks.add(puck1)
     puck2 = Puck()
     puck3 = Puck()
     puck4 = Puck()
@@ -92,7 +92,6 @@ def display_information():
     ''' Displays the velocities after each collision in the side bar '''
     pass
 
-
 def main():
     ''' Main Function'''
 
@@ -108,8 +107,13 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
+        # Collision detection
+        for puck in pucks:
+            col(puck, pucks)
+
         # Flip the display
         pygame.display.flip()
+        pygame.display.update()
 
 if __name__ == '__main__':
     main()
