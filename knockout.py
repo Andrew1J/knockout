@@ -7,8 +7,8 @@ SCREEN_WIDTH, SCREEN_HEIGHT = 800, 800
 ISLAND_WIDTH, ISLAND_HEIGHT = 400, 400
 PUCK_RADIUS = 10
 
-screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-pucks = pygame.sprite.Group()
+SCREEN = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
+PUCKS = pygame.sprite.Group()
 
 # Defines a class for the pucks
 class Puck(pygame.sprite.Sprite):
@@ -33,15 +33,29 @@ class Puck(pygame.sprite.Sprite):
 
     def click(self):
         self.isClicked = not self.isClicked
-        self.set_color((255,255,255))
 
     def draw(self, surface):
         ''' Draw puck to the surface '''
-        pygame.draw.circle(surface, self.color, (self.position[0], self.position[1]), PUCK_RADIUS)
+        if self.isClicked:
+            pygame.draw.circle(surface, (0,0,0), (self.position[0], self.position[1]), PUCK_RADIUS)
+        else:
+            pygame.draw.circle(surface, self.color, (self.position[0], self.position[1]), PUCK_RADIUS)
 
     def get_pos(self):
         '''Get puck position'''
         return (self.position[0],self.position[1])
+
+    def col_circle(self, circlepos):
+        x1, y1 = self.position
+        x2, y2 = circlepos
+
+        distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+
+        if distance <= PUCK_RADIUS:
+            return True
+        return False
+
+
 
     def col(self, pucks):
         '''Checking for collision'''
@@ -64,10 +78,10 @@ def setup_lvl1():
     ''' Sets up screen for level 1'''
 
     # Draw Water
-    screen.fill((0, 0, 255))
+    SCREEN.fill((0, 0, 255))
 
     # Draw Island
-    pygame.draw.rect(screen, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
+    pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
     # Draw Pucks
     puck1 = Puck((300, 500), (255,0,255))
@@ -77,20 +91,12 @@ def setup_lvl1():
     puck5 = Puck((500, 400), (255,0,0))
     puck6 = Puck((500, 300), (255,0,0))
 
-    pucks.add(puck1)
-    pucks.add(puck2)
-    pucks.add(puck3)
-    pucks.add(puck4)
-    pucks.add(puck5)
-    pucks.add(puck6)
-
-    puck1.draw(screen)
-    puck2.draw(screen)
-    puck3.draw(screen)
-    puck4.draw(screen)
-    puck5.draw(screen)
-    puck6.draw(screen)
-
+    PUCKS.add(puck1)
+    PUCKS.add(puck2)
+    PUCKS.add(puck3)
+    PUCKS.add(puck4)
+    PUCKS.add(puck5)
+    PUCKS.add(puck6)
 
 def display_information():
     ''' Displays the velocities after each collision in the side bar '''
@@ -102,37 +108,33 @@ def main():
     # Set up the level
     setup_lvl1()
     
-    SETUPSTATE = True
+    DRAW_ARROW_STATE = True
 
-    # Run until the user asks to quit
+    # MAIN GAME LOOP
     running = True
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT: # Check for game quit()
-                pygame.quit()
-                running = False
+        # Main Event Handling
+        if DRAW_ARROW_STATE:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_q: # Check for game quit()
+                    exit()
+                if event.type == pygame.MOUSEBUTTONDOWN: # Check for mouse lcick
+                    pos = pygame.mouse.get_pos()
 
-            if event.type == pygame.MOUSEBUTTONDOWN and pucks.rect.collidepoint(pygame.mouse.get_pos()):
-                pos = pygame.mouse.get_pos()
-
-
-            
-
-        # Collision detection
-        for puck in pucks:
-            # col(puck, pucks)
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
-                    pygame.quit()
-
-        if SETUPSTATE:
-            pass
-            # able to click on balls and draw arrows
+                    clicked_sprites = [puck for puck in PUCKS if puck.col_circle(pos)]
+                    for puck in clicked_sprites:
+                        print(puck.get_pos())
+                        puck.click()
         else:
-            pass
-            # balls shoot
+            # Check for collisions
 
-        # Flip the display
+            pass
+
+        # Draw Pucks To Screen
+        for puck in PUCKS:
+            puck.draw(SCREEN)
+
+        # Flip / Update the Display
         pygame.display.flip()
         pygame.display.update()
 
