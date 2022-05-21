@@ -118,6 +118,9 @@ def main():
     while running:
 
         if DRAW_ARROW_STATE:
+
+            PLAYER_ONE_TURN = True
+
             # Main Event Handling
             for event in pygame.event.get():
 
@@ -140,7 +143,7 @@ def main():
                         pygame.draw.line(SCREEN, (0,0,0), puck.get_pos(), pos2)
                         puck.click()
         else:
-            # Check for collisions
+            # Check for collisions after shooting the pucks
 
             pass
 
