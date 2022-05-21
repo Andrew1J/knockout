@@ -2,13 +2,14 @@ import pygame
 import sys
 pygame.init()
 
+
 # Global Variables
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 800
 ISLAND_WIDTH, ISLAND_HEIGHT = 400, 400
 PUCK_RADIUS = 10
-
 SCREEN = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 PUCKS = pygame.sprite.Group()
+
 
 # Defines a class for the pucks
 class Puck(pygame.sprite.Sprite):
@@ -32,6 +33,7 @@ class Puck(pygame.sprite.Sprite):
         pass
 
     def click(self):
+        ''' User clicked the puck '''
         self.isClicked = not self.isClicked
 
     def draw(self, surface):
@@ -46,6 +48,7 @@ class Puck(pygame.sprite.Sprite):
         return (self.position[0],self.position[1])
 
     def col_circle(self, circlepos):
+        '''Checking for collision with a circle'''
         x1, y1 = self.position
         x2, y2 = circlepos
 
@@ -54,8 +57,6 @@ class Puck(pygame.sprite.Sprite):
         if distance <= PUCK_RADIUS:
             return True
         return False
-
-
 
     def col(self, pucks):
         '''Checking for collision'''
@@ -98,9 +99,11 @@ def setup_lvl1():
     PUCKS.add(puck5)
     PUCKS.add(puck6)
 
+
 def display_information():
     ''' Displays the velocities after each collision in the side bar '''
     pass
+
 
 def main():
     ''' Main Function'''
@@ -113,17 +116,28 @@ def main():
     # MAIN GAME LOOP
     running = True
     while running:
-        # Main Event Handling
-        if DRAW_ARROW_STATE:
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_q: # Check for game quit()
-                    exit()
-                if event.type == pygame.MOUSEBUTTONDOWN: # Check for mouse lcick
-                    pos = pygame.mouse.get_pos()
 
-                    clicked_sprites = [puck for puck in PUCKS if puck.col_circle(pos)]
+        if DRAW_ARROW_STATE:
+            # Main Event Handling
+            for event in pygame.event.get():
+
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_q: # Check for game quit()
+                    running = False
+
+                if event.type == pygame.MOUSEBUTTONDOWN: # Check for mouse click
+                    pos1 = pygame.mouse.get_pos()
+                    clicked_sprites = [puck for puck in PUCKS if puck.col_circle(pos1)]
+                    
                     for puck in clicked_sprites:
                         print(puck.get_pos())
+                        puck.click()
+
+                if event.type == pygame.MOUSEBUTTONUP: # Draw arrow
+                    # TODO reset arrow, store arrow magnitude + direction
+                    pos2 = pygame.mouse.get_pos()
+
+                    for puck in clicked_sprites:
+                        pygame.draw.line(SCREEN, (0,0,0), puck.get_pos(), pos2)
                         puck.click()
         else:
             # Check for collisions
@@ -139,5 +153,7 @@ def main():
         pygame.display.update()
 
     pygame.quit()
+
+
 if __name__ == '__main__':
     main()
