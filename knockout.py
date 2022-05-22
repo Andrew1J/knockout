@@ -53,6 +53,12 @@ def display_information():
     pass
 
 
+def get_intersection(puck_pos, arrow_endpoint):
+    ''' Returns the intersection between the arrow and the island border '''
+    x1,y1 = puck_pos
+    x2,y2 = arrow_endpoint
+    
+
 def main():
     ''' Main Function'''
 
@@ -68,6 +74,7 @@ def main():
         if DRAW_ARROW_STATE:
 
             PLAYER_ONE_TURN = True
+            ARROWS = []
 
             # Main Event Handling
             for event in pygame.event.get():
@@ -80,7 +87,6 @@ def main():
                     clicked_sprites = [puck for puck in PUCKS if puck.col_circle(pos1)]
                     
                     for puck in clicked_sprites:
-                        print(puck.get_pos())
                         puck.click()
 
                 if event.type == pygame.MOUSEBUTTONUP: # Draw arrow
@@ -88,7 +94,9 @@ def main():
                     pos2 = pygame.mouse.get_pos()
 
                     for puck in clicked_sprites:
+                        get_intersection(puck.get_pos(), pos2)
                         pygame.draw.line(SCREEN, (0,0,0), puck.get_pos(), pos2)
+                        ARROWS.append((puck.get_pos(), pos2))
                         puck.click()
         else:
             # Check for collisions after shooting the pucks
