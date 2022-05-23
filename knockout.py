@@ -1,6 +1,6 @@
 import pygame
 import sys
-from Puck import Puck
+from puck import Puck
 pygame.init()
 
 
