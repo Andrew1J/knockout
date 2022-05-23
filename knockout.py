@@ -68,11 +68,12 @@ def outofbounds(coords):
 
 def main():
     ''' Main Function'''
+    
+    DRAW_ARROW_STATE = True
 
     # Set up the level
     setup_lvl1()
-    
-    DRAW_ARROW_STATE = True
+
 
     # MAIN GAME LOOP
     running = True
@@ -83,7 +84,7 @@ def main():
             # Main Event Handling
             for event in pygame.event.get():
 
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_q: # Check for game quit()
+                if (event.type == pygame.KEYDOWN and event.key == pygame.K_q) or event.type == pygame.QUIT: # Check for game quit()
                     running = False
 
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check for mouse click
@@ -98,9 +99,10 @@ def main():
                     pos2 = pygame.mouse.get_pos()
 
                     for puck in clicked_sprites:
-                        if not outofbounds(pos2):
+                        if not outofbounds(pos2) and not puck.hasLine:
                             pygame.draw.line(SCREEN, (0,0,0), puck.get_pos(), pos2)
                             ARROWS.append((puck.get_pos(), pos2))
+                            puck.hasLine = True
                         puck.click()
                     
                     print(ARROWS)

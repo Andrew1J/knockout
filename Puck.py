@@ -12,6 +12,7 @@ class Puck(pygame.sprite.Sprite):
         self.color = color
         self.onIsland = True
         self.isClicked = False
+        self.hasLine = False
 
     def set_pos(self, x, y):
         ''' Set the x,y position of the puck '''
