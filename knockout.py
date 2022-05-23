@@ -2,7 +2,7 @@ import pygame
 import sys
 from puck import Puck
 pygame.init()
-
+clock = pygame.time.Clock()
 
 # Global Variables
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 800
@@ -20,7 +20,6 @@ class Arrow(object):
 
     def draw(self,surf):
         pass
-
 
 # Set Up Levels
 def setup_lvl1():
@@ -57,19 +56,21 @@ def get_intersection(puck_pos, arrow_endpoint):
     ''' Returns the intersection between the arrow and the island border '''
     x1,y1 = puck_pos
     x2,y2 = arrow_endpoint
-    
+
 
 def main():
     ''' Main Function'''
 
     # Set up the level
     setup_lvl1()
-    
+
     DRAW_ARROW_STATE = True
 
     # MAIN GAME LOOP
     running = True
     while running:
+        # Set the frame rates to 60 fps
+            clock.tick(60)
 
         if DRAW_ARROW_STATE:
 
@@ -85,7 +86,7 @@ def main():
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check for mouse click
                     pos1 = pygame.mouse.get_pos()
                     clicked_sprites = [puck for puck in PUCKS if puck.col_circle(pos1)]
-                    
+
                     for puck in clicked_sprites:
                         puck.click()
 
