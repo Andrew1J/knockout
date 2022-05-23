@@ -9,7 +9,8 @@ SCREEN_WIDTH, SCREEN_HEIGHT = 800, 800
 ISLAND_WIDTH, ISLAND_HEIGHT = 400, 400
 SCREEN = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 PUCKS = pygame.sprite.Group()
-
+PLAYER_ONE_TURN = True
+ARROWS = []
 
 # Defines a class for the shooting arrow
 class Arrow(object):
@@ -53,11 +54,17 @@ def display_information():
     pass
 
 
-def get_intersection(puck_pos, arrow_endpoint):
-    ''' Returns the intersection between the arrow and the island border '''
-    x1,y1 = puck_pos
-    x2,y2 = arrow_endpoint
+def outofbounds(coords):
+    x,y = coords
+
+    if x > (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2):
+        return True
     
+    if y > (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2):
+        return True
+
+    return False
+
 
 def main():
     ''' Main Function'''
@@ -72,9 +79,6 @@ def main():
     while running:
 
         if DRAW_ARROW_STATE:
-
-            PLAYER_ONE_TURN = True
-            ARROWS = []
 
             # Main Event Handling
             for event in pygame.event.get():
@@ -94,10 +98,12 @@ def main():
                     pos2 = pygame.mouse.get_pos()
 
                     for puck in clicked_sprites:
-                        get_intersection(puck.get_pos(), pos2)
-                        pygame.draw.line(SCREEN, (0,0,0), puck.get_pos(), pos2)
-                        ARROWS.append((puck.get_pos(), pos2))
+                        if not outofbounds(pos2):
+                            pygame.draw.line(SCREEN, (0,0,0), puck.get_pos(), pos2)
+                            ARROWS.append((puck.get_pos(), pos2))
                         puck.click()
+                    
+                    print(ARROWS)
         else:
             # Check for collisions after shooting the pucks
 
