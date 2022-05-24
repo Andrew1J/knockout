@@ -80,7 +80,7 @@ def main():
     while running:
         # Set the frame rates to 60 fps
         clock.tick(60)
-
+            
         if DRAW_ARROW_STATE:
 
             # Main Event Handling
@@ -108,10 +108,13 @@ def main():
                         puck.click()
                     
                     print(ARROWS)
+
+                if (event.type == pygame.KEYDOWN and event.key == pygame.K_a): # Check for game quit()
+                    DRAW_ARROW_STATE = False
         else:
             # Check for collisions after shooting the pucks
-
-            pass
+            for puck in PUCKS:
+                puck.move()
 
         # Draw Pucks To Screen
         for puck in PUCKS:

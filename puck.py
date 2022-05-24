@@ -23,10 +23,14 @@ class Puck(pygame.sprite.Sprite):
         ''' Set the color of the puck '''
         self.color = color
 
-    def move(self, distance):
+    def move(self):
         ''' Calculate the velocities and stuff '''
-        vel = distance*0.1
-        acc = -5
+        # vel = distance*0.1
+        # acc = -5
+        x,y = self.position
+        x += 10
+        y += 10
+        self.position = (x,y)
         pass
 
     def click(self):
