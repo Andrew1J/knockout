@@ -13,6 +13,7 @@ class Puck(pygame.sprite.Sprite):
         self.onIsland = True
         self.isClicked = False
         self.hasLine = False
+        self.velocity = 0
 
     def set_pos(self, x, y):
         ''' Set the x,y position of the puck '''
@@ -22,8 +23,10 @@ class Puck(pygame.sprite.Sprite):
         ''' Set the color of the puck '''
         self.color = color
 
-    def move(self):
+    def move(self, distance):
         ''' Calculate the velocities and stuff '''
+        vel = distance*0.1
+        acc = -5
         pass
 
     def click(self):
@@ -42,7 +45,7 @@ class Puck(pygame.sprite.Sprite):
         return (self.position[0],self.position[1])
 
     def col_circle(self, circlepos):
-        '''Checking for collision with a circle'''
+        '''Checking for collision with another puck'''
         x1, y1 = self.position
         x2, y2 = circlepos
 
