@@ -79,7 +79,7 @@ def main():
     running = True
     while running:
         # Set the frame rates to 60 fps
-            clock.tick(60)
+        clock.tick(60)
 
         if DRAW_ARROW_STATE:
 
