@@ -58,7 +58,7 @@ def outofbounds(coords):
 
     if x > (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2):
         return True
-    
+
     if y > (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2):
         return True
 
@@ -75,7 +75,7 @@ def subtract_vectors(v1,v2):
 
 def main():
     ''' Main Function'''
-    
+
     DRAW_ARROW_STATE = True
 
     # Set up the level
@@ -87,7 +87,7 @@ def main():
     running = True
     while running:
         clock.tick(60)
-            
+
         if DRAW_ARROW_STATE:
 
             # Main Event Handling
@@ -113,7 +113,7 @@ def main():
                             ARROWS.append((puck.get_pos(), pos2))
                             puck.hasLine = True
                         puck.click()
-                    
+
                     print(ARROWS)
 
                 if (event.type == pygame.KEYDOWN and event.key == pygame.K_a): # Check for game quit()
@@ -125,7 +125,7 @@ def main():
 
             # Draw Island
             pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
-            
+
             for i in range(len(PUCKS)):
                 for j in range(i+1, len(PUCKS)):
                     if PUCKS[i].col_circle(PUCKS[j].position):
@@ -138,10 +138,20 @@ def main():
                         x1,y1 = PUCKS[i].position
                         x2,y2 = PUCKS[j].position
 
-                        vx1f = subtract_vectors(vx1i, ((2*m1) / (m1 + m2)) * (dot_product([vx1i-vx2i], [x1-x2, y1-y2]) / magnitude([x1-x2, y1-y2])) * [x1-x2, y1-y2])
+                        const1 = ((2*m2) / (m1 + m2)) * (dot_product([vx1i-vx2i, vy1i-vy2i], [x1-x2, y1-y2]) / magnitude([x1-x2, y1-y2])**0.5)
+                        vx1f = subtract_vectors(vx1i, [element * const1 for element in [x1-x2, y1-y2]])
 
-                        PUCKS[i].velocity = (PUCKS[i].velocity[0], -PUCKS[i].velocity[1])
-                        PUCKS[j].velocity = (-PUCKS[j].velocity[0], PUCKS[j].velocity[1])
+                        const2 = ((2*m1) / (m1 + m2)) * (dot_product([vx2i-vx1i, vy2i-vy1i], [x2-x1, y2-y1]) / magnitude([x2-x1, y2-y1])**0.5)
+                        vx2f = subtract_vectors(vx1i, [element * const2 for element in [x2-x1, y2-y1]])
+
+                        const3 = ((2*m2) / (m1 + m2)) * (dot_product([vy1i-vy2i, vx1i-vx2i], [x1-x2, y1-y2]) / magnitude([x1-x2, y1-y2])**0.5)
+                        vy1f = subtract_vectors(vx1i, [element * const3 for element in [x1-x2, y1-y2]])
+
+                        const4 = ((2*m1) / (m1 + m2)) * (dot_product([vy2i-vy1i, vx2i-vx1i], [x2-x1, y2-y1]) / magnitude([x2-x1, y2-y1])**0.5)
+                        vy2f = subtract_vectors(vx1i, [element * const4 for element in [x2-x1, y2-y1]])
+
+                        PUCKS[i].velocity = (vx1f, vy1f)
+                        PUCKS[j].velocity = (vx2f, vy2f)
 
             for puck in PUCKS:
                 puck.move()
