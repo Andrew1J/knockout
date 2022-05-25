@@ -24,12 +24,12 @@ def setup_lvl1():
     pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
     # Draw Pucks
-    puck1 = Puck((300, 500), (1,1),(255,0,255))
-    puck2 = Puck((300, 400), (1,1),(255,0,255))
-    puck3 = Puck((300, 300), (1,1),(255,0,255))
-    puck4 = Puck((500, 500), (1,1),(255,0,0))
-    puck5 = Puck((500, 400), (1,1),(255,0,0))
-    puck6 = Puck((500, 300), (1,1),(255,0,0))
+    puck1 = Puck((300, 500), (0.5,0.5),(255,0,255), 10000)
+    puck2 = Puck((300, 400), (0.5,0.5),(255,0,255), 10000)
+    puck3 = Puck((300, 300), (0.5,0.5),(255,0,255), 10000)
+    puck4 = Puck((500, 500), (0.5,0.5),(255,0,0), 10000)
+    puck5 = Puck((500, 400), (0.5,0.5),(255,0,0), 10000)
+    puck6 = Puck((500, 300), (0.5,0.5),(255,0,0), 10000)
 
     PUCKS.append(puck1)
     PUCKS.append(puck2)
@@ -144,11 +144,14 @@ def main():
                             element *= const2
                         v2f = subtract_vectors([vx2i,vy2i], temp)
 
-                        print(v1f)
-                        print(v2f)
+                        # print(v1f)
+                        # print(v2f)
 
                         PUCKS[i].velocity = v1f
                         PUCKS[j].velocity = v2f
+
+                        print(PUCKS[i].velocity)
+                        print(PUCKS[j].velocity)
 
             for puck in PUCKS:
                 puck.move()
