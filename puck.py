@@ -11,6 +11,7 @@ class Puck(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.position = position
         self.color = color
+        self.radius = PUCK_RADIUS
         self.onIsland = True
         self.isClicked = False
         self.hasLine = False
@@ -34,9 +35,9 @@ class Puck(pygame.sprite.Sprite):
         y += vy
         self.position = (x,y)
 
-        if x >= (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2):
+        if x >= (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) - self.radius or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2) + self.radius:
             self.velocity = (-self.velocity[0], self.velocity[1])
-        if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2):
+        if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) - self.radius or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2) + self.radius:
             self.velocity = (self.velocity[0], -self.velocity[1])
 
     def click(self):

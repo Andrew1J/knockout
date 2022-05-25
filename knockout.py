@@ -8,7 +8,7 @@ clock = pygame.time.Clock()
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 800
 ISLAND_WIDTH, ISLAND_HEIGHT = 400, 400
 SCREEN = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
-PUCKS = pygame.sprite.Group()
+PUCKS = []
 PLAYER_ONE_TURN = True
 ARROWS = []
 
@@ -33,19 +33,19 @@ def setup_lvl1():
     pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
     # Draw Pucks
-    puck1 = Puck((300, 500), (5,5),(255,0,255))
-    puck2 = Puck((300, 400), (5,5),(255,0,255))
-    puck3 = Puck((300, 300), (5,5),(255,0,255))
-    puck4 = Puck((500, 500), (5,5),(255,0,0))
-    puck5 = Puck((500, 400), (5,5),(255,0,0))
-    puck6 = Puck((500, 300), (5,5),(255,0,0))
+    puck1 = Puck((300, 500), (1,1),(255,0,255))
+    puck2 = Puck((300, 400), (1,1),(255,0,255))
+    puck3 = Puck((300, 300), (1,1),(255,0,255))
+    puck4 = Puck((500, 500), (1,1),(255,0,0))
+    puck5 = Puck((500, 400), (1,1),(255,0,0))
+    puck6 = Puck((500, 300), (1,1),(255,0,0))
 
-    PUCKS.add(puck1)
-    PUCKS.add(puck2)
-    PUCKS.add(puck3)
-    PUCKS.add(puck4)
-    PUCKS.add(puck5)
-    PUCKS.add(puck6)
+    PUCKS.append(puck1)
+    PUCKS.append(puck2)
+    PUCKS.append(puck3)
+    PUCKS.append(puck4)
+    PUCKS.append(puck5)
+    PUCKS.append(puck6)
 
 
 def display_information():
@@ -117,6 +117,12 @@ def main():
 
             # Draw Island
             pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
+            
+            for i in range(len(PUCKS)):
+                for j in range(i+1, len(PUCKS)):
+                    if PUCKS[i].col_circle(PUCKS[j].position):
+                        PUCKS[i].velocity = (PUCKS[i].velocity[0], -PUCKS[i].velocity[1])
+                        PUCKS[j].velocity = (-PUCKS[j].velocity[0], PUCKS[j].velocity[1])
 
             for puck in PUCKS:
                 puck.move()
