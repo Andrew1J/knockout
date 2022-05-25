@@ -64,6 +64,14 @@ def outofbounds(coords):
 
     return False
 
+def dot_product(v1, v2):
+    return v1[0] * v2[0] + v1[1] * v2[1]
+
+def magnitude(v):
+    return (v[0]**2 + v[1]**2)**0.5
+
+def subtract_vectors(v1,v2):
+    return (v1[0] - v2[0], v1[1] - v2[1])
 
 def main():
     ''' Main Function'''
@@ -121,6 +129,17 @@ def main():
             for i in range(len(PUCKS)):
                 for j in range(i+1, len(PUCKS)):
                     if PUCKS[i].col_circle(PUCKS[j].position):
+                        vx1i = PUCKS[i].velocity[0]
+                        vx2i = PUCKS[j].velocity[0]
+                        vy1i = PUCKS[i].velocity[1]
+                        vy2i = PUCKS[j].velocity[1]
+                        m1 = PUCKS[i].mass
+                        m2 = PUCKS[j].mass
+                        x1,y1 = PUCKS[i].position
+                        x2,y2 = PUCKS[j].position
+
+                        vx1f = subtract_vectors(vx1i, ((2*m1) / (m1 + m2)) * (dot_product([vx1i-vx2i], [x1-x2, y1-y2]) / magnitude([x1-x2, y1-y2])) * [x1-x2, y1-y2])
+
                         PUCKS[i].velocity = (PUCKS[i].velocity[0], -PUCKS[i].velocity[1])
                         PUCKS[j].velocity = (-PUCKS[j].velocity[0], PUCKS[j].velocity[1])
 
