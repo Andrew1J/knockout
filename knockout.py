@@ -33,12 +33,12 @@ def setup_lvl1():
     pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
     # Draw Pucks
-    puck1 = Puck((300, 500), (255,0,255))
-    puck2 = Puck((300, 400), (255,0,255))
-    puck3 = Puck((300, 300), (255,0,255))
-    puck4 = Puck((500, 500), (255,0,0))
-    puck5 = Puck((500, 400), (255,0,0))
-    puck6 = Puck((500, 300), (255,0,0))
+    puck1 = Puck((300, 500), (5,5),(255,0,255))
+    puck2 = Puck((300, 400), (5,5),(255,0,255))
+    puck3 = Puck((300, 300), (5,5),(255,0,255))
+    puck4 = Puck((500, 500), (5,5),(255,0,0))
+    puck5 = Puck((500, 400), (5,5),(255,0,0))
+    puck6 = Puck((500, 300), (5,5),(255,0,0))
 
     PUCKS.add(puck1)
     PUCKS.add(puck2)
@@ -78,7 +78,6 @@ def main():
     # MAIN GAME LOOP
     running = True
     while running:
-        # Set the frame rates to 60 fps
         clock.tick(60)
             
         if DRAW_ARROW_STATE:
@@ -113,6 +112,12 @@ def main():
                     DRAW_ARROW_STATE = False
         else:
             # Check for collisions after shooting the pucks
+            # Draw Water
+            SCREEN.fill((0, 0, 255))
+
+            # Draw Island
+            pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
+
             for puck in PUCKS:
                 puck.move()
 

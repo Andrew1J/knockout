@@ -2,18 +2,19 @@ import pygame
 
 
 PUCK_RADIUS = 10
-
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 800
+ISLAND_WIDTH, ISLAND_HEIGHT = 400, 400
 
 # Defines a class for the pucks
 class Puck(pygame.sprite.Sprite):
-    def __init__(self, position, color):
+    def __init__(self, position, velocity, color):
         pygame.sprite.Sprite.__init__(self)
         self.position = position
         self.color = color
         self.onIsland = True
         self.isClicked = False
         self.hasLine = False
-        self.velocity = 0
+        self.velocity = velocity
 
     def set_pos(self, x, y):
         ''' Set the x,y position of the puck '''
@@ -28,10 +29,15 @@ class Puck(pygame.sprite.Sprite):
         # vel = distance*0.1
         # acc = -5
         x,y = self.position
-        x += 10
-        y += 10
+        vx,vy = self.velocity
+        x += vx
+        y += vy
         self.position = (x,y)
-        pass
+
+        if x >= (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2):
+            self.velocity = (-self.velocity[0], self.velocity[1])
+        if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2):
+            self.velocity = (self.velocity[0], -self.velocity[1])
 
     def click(self):
         ''' User clicked the puck '''
