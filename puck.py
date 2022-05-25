@@ -16,7 +16,7 @@ class Puck(pygame.sprite.Sprite):
         self.isClicked = False
         self.hasLine = False
         self.velocity = velocity
-        self.mass = 10
+        self.mass = 100
 
     def set_pos(self, x, y):
         ''' Set the x,y position of the puck '''
