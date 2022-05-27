@@ -12,7 +12,7 @@ SCREEN = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 PUCKS = []
 PLAYER_ONE_TURN = True
 ARROWS = []
-GRAVITY = -0.5
+GRAVITY = -2
 mu = 0.5
 
 # Set Up Levels
@@ -131,10 +131,12 @@ def main():
                     # PUCKS[i].velocity = (-PUCKS[i].velocity[0], PUCKS[i].velocity[1])
                     PUCKS[i].position = (-1,-1)
                     PUCKS[i].velocity = (0,0)
+                    PUCKS[i].onIsland = False
                 if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) - PUCKS[i].radius or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2) + PUCKS[i].radius:
                     # PUCKS[i].velocity = (PUCKS[i].velocity[0], -PUCKS[i].velocity[1])
                     PUCKS[i].position = (-1,-1)
                     PUCKS[i].velocity = (0,0)
+                    PUCKS[i].onIsland = False
 
             for i in range(len(PUCKS)):
                 for arrow in ARROWS:
@@ -167,14 +169,6 @@ def main():
                         PUCKS[i].velocity = (vx1f,vy1f)
                         PUCKS[j].velocity = (vx2f, vy2f)
 
-            # for i in range(len(PUCKS)):
-            #     STOPPED = True
-            #     if PUCKS[i].velocity[0] != 0 and PUCKS[i].velocity[1] != 0:
-            #         STOPPED = False
-
-            # if STOPPED:
-            #     DRAW_ARROW_STATE = not DRAW_ARROW_STATE
-
             for puck in PUCKS:
                 ax = mu * GRAVITY * math.cos(get_angle_of_motion(puck.velocity[0], puck.velocity[1]))
                 ay = mu * GRAVITY * math.sin(get_angle_of_motion(puck.velocity[0], puck.velocity[1]))
@@ -185,6 +179,15 @@ def main():
                 puck.velocity = (vx,vy)
                 print(puck.acceleration)
                 puck.move()
+
+            STOPPED = True
+
+            for i in range(len(PUCKS)):
+                if PUCKS[i].velocity[0] != 0 and PUCKS[i].velocity[1] != 0:
+                    STOPPED = False
+
+            if STOPPED:
+                DRAW_ARROW_STATE = not DRAW_ARROW_STATE
 
         # Draw Pucks To Screen
         for puck in PUCKS:
