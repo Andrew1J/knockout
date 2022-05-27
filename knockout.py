@@ -12,6 +12,8 @@ SCREEN = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 PUCKS = []
 PLAYER_ONE_TURN = True
 ARROWS = []
+GRAVITY = -0.5
+mu = 0.5
 
 # Set Up Levels
 def setup_lvl1():
@@ -64,6 +66,9 @@ def magnitude(v):
 def subtract_vectors(v1,v2):
     return (v1[0] - v2[0], v1[1] - v2[1])
 
+def get_angle_of_motion(v1,v2):
+    return math.atan(v2/(v1+.000001))
+
 def main():
     ''' Main Function'''
 
@@ -113,7 +118,7 @@ def main():
             # Check for collisions after shooting the pucks
             # Draw Water
             SCREEN.fill((0, 0, 255))
-            
+
             # Draw Island
             pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
@@ -140,7 +145,7 @@ def main():
             # Check for collisions
             for i in range(len(PUCKS)):
                 for j in range(i+1, len(PUCKS)):
-                    if PUCKS[i].col_circle(PUCKS[j].position):  
+                    if PUCKS[i].col_circle(PUCKS[j].position):
 
                         vx1i = PUCKS[i].velocity[0] # 1
                         vy1i = PUCKS[i].velocity[1] # 1
@@ -153,7 +158,7 @@ def main():
 
                         const1 = ((2*m2) / (m1 + m2)) * (dot_product([vx1i-vx2i, vy1i-vy2i], [x1-x2, y1-y2])) / (magnitude([x1-x2, y1-y2])+.000001)
                         vx1f = vx1i - (const1 * (x1-x2))
-                        vy1f = vy1i - (const1 * (y1-y2))                            
+                        vy1f = vy1i - (const1 * (y1-y2))
 
                         const2 = ((2*m1) / (m1 + m2)) * (dot_product([vx2i-vx1i, vy2i-vy1i], [x2-x1, y2-y1])) / (magnitude([x2-x1, y2-y1])+.000001)
                         vx2f = vx2i - (const2 * (x2-x1))
@@ -171,6 +176,14 @@ def main():
             #     DRAW_ARROW_STATE = not DRAW_ARROW_STATE
 
             for puck in PUCKS:
+                ax = mu * GRAVITY * math.cos(get_angle_of_motion(puck.velocity[0], puck.velocity[1]))
+                ay = mu * GRAVITY * math.sin(get_angle_of_motion(puck.velocity[0], puck.velocity[1]))
+                puck.acceleration = ax, ay
+                vx,vy = puck.velocity
+                vx += ax * .01
+                vy += ay * .01
+                puck.velocity = (vx,vy)
+                print(puck.acceleration)
                 puck.move()
 
         # Draw Pucks To Screen
@@ -180,7 +193,7 @@ def main():
         # Flip / Update the Display
         pygame.display.flip()
         pygame.display.update()
-    
+
     pygame.quit()
 
 

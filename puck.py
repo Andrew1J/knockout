@@ -17,6 +17,7 @@ class Puck(pygame.sprite.Sprite):
         self.hasLine = False
         self.velocity = velocity
         self.mass = mass
+        self.acceleration = (0,0)
 
     def set_pos(self, x, y):
         ''' Set the x,y position of the puck '''
@@ -28,8 +29,6 @@ class Puck(pygame.sprite.Sprite):
 
     def move(self):
         ''' Calculate the velocities and stuff '''
-        # vel = distance*0.1
-        # acc = -5
         x,y = self.position
         vx,vy = self.velocity
         x += vx
