@@ -24,12 +24,12 @@ def setup_lvl1():
     pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
     # Draw Pucks
-    puck1 = Puck((300, 500), (1,1),(255,0,255), 1)
-    puck2 = Puck((300, 400), (1,1),(255,0,255), 1)
-    puck3 = Puck((300, 300), (1,1),(255,0,255), 1)
-    puck4 = Puck((500, 500), (1,1),(255,0,0), 1)
-    puck5 = Puck((500, 400), (1,1),(255,0,0), 1)
-    puck6 = Puck((500, 300), (1,1),(255,0,0), 1)
+    puck1 = Puck((300, 500), (0,0),(255,0,255), 1)
+    puck2 = Puck((300, 400), (0,0),(255,0,255), 1)
+    puck3 = Puck((300, 300), (0,0),(255,0,255), 1)
+    puck4 = Puck((500, 500), (0,0),(255,0,0), 1)
+    puck5 = Puck((500, 400), (0,0),(255,0,0), 1)
+    puck6 = Puck((500, 300), (0,0),(255,0,0), 1)
 
     PUCKS.append(puck1)
     PUCKS.append(puck2)
@@ -101,7 +101,7 @@ def main():
                     for puck in clicked_sprites:
                         if not outofbounds(pos2) and not puck.hasLine:
                             pygame.draw.line(SCREEN, (0,0,0), puck.get_pos(), pos2)
-                            ARROWS.append((puck.get_pos(), pos2))
+                            ARROWS.append((puck.get_pos(),(pos2[0]-puck.get_pos()[0], pos2[1] - puck.get_pos()[1])))
                             puck.hasLine = True
                         puck.click()
 
@@ -117,14 +117,27 @@ def main():
             # Draw Island
             pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
+            # FOR TESTING PURPOSES
             for i in range(len(PUCKS)):
                 x,y = PUCKS[i].position
+
+                ''' PUCK GETS REMOVED WHEN ITS OVER THE BORDER '''
                 if x >= (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) - PUCKS[i].radius or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2) + PUCKS[i].radius:
-                    PUCKS[i].velocity = (-PUCKS[i].velocity[0], PUCKS[i].velocity[1])
+                    # PUCKS[i].velocity = (-PUCKS[i].velocity[0], PUCKS[i].velocity[1])
+                    PUCKS[i].position = (-1,-1)
+                    PUCKS[i].velocity = (0,0)
                 if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) - PUCKS[i].radius or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2) + PUCKS[i].radius:
-                    PUCKS[i].velocity = (PUCKS[i].velocity[0], -PUCKS[i].velocity[1])
+                    # PUCKS[i].velocity = (PUCKS[i].velocity[0], -PUCKS[i].velocity[1])
+                    PUCKS[i].position = (-1,-1)
+                    PUCKS[i].velocity = (0,0)
 
+            for i in range(len(PUCKS)):
+                for arrow in ARROWS:
+                    if PUCKS[i].position == arrow[0]:
+                        PUCKS[i].velocity = (arrow[1][0] * 0.01, arrow[1][1] * 0.01)
+                PUCKS[i].hasLine = False
 
+            # Check for collisions
             for i in range(len(PUCKS)):
                 for j in range(i+1, len(PUCKS)):
                     if PUCKS[i].col_circle(PUCKS[j].position):  
@@ -138,23 +151,24 @@ def main():
                         x1,y1 = PUCKS[i].position
                         x2,y2 = PUCKS[j].position
 
-
-                        const1 = ((2*m2) / (m1 + m2)) * (dot_product([vx1i-vx2i, vy1i-vy2i], [x1-x2, y1-y2])) / (magnitude([x1-x2, y1-y2]))
+                        const1 = ((2*m2) / (m1 + m2)) * (dot_product([vx1i-vx2i, vy1i-vy2i], [x1-x2, y1-y2])) / (magnitude([x1-x2, y1-y2])+.000001)
                         vx1f = vx1i - (const1 * (x1-x2))
                         vy1f = vy1i - (const1 * (y1-y2))                            
 
-                        print([vx1i, const1, x1, x2])
-                        print((vx1f,vy1f))
-
-                        const2 = ((2*m1) / (m1 + m2)) * (dot_product([vx2i-vx1i, vy2i-vy1i], [x2-x1, y2-y1])) / (magnitude([x2-x1, y2-y1]))
+                        const2 = ((2*m1) / (m1 + m2)) * (dot_product([vx2i-vx1i, vy2i-vy1i], [x2-x1, y2-y1])) / (magnitude([x2-x1, y2-y1])+.000001)
                         vx2f = vx2i - (const2 * (x2-x1))
                         vy2f = vy2i - (const2 * (y2-y1))
 
                         PUCKS[i].velocity = (vx1f,vy1f)
                         PUCKS[j].velocity = (vx2f, vy2f)
 
-                        print(PUCKS[i].velocity)
-                        print(PUCKS[j].velocity)
+            # for i in range(len(PUCKS)):
+            #     STOPPED = True
+            #     if PUCKS[i].velocity[0] != 0 and PUCKS[i].velocity[1] != 0:
+            #         STOPPED = False
+
+            # if STOPPED:
+            #     DRAW_ARROW_STATE = not DRAW_ARROW_STATE
 
             for puck in PUCKS:
                 puck.move()
