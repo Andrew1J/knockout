@@ -33,12 +33,8 @@ class Puck(pygame.sprite.Sprite):
         x,y = self.position
         vx,vy = self.velocity
         x += vx
+        y += vy
         self.position = (x,y)
-
-        if x >= (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) - self.radius or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2) + self.radius:
-            self.velocity = (-self.velocity[0], self.velocity[1])
-        if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) - self.radius or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2) + self.radius:
-            self.velocity = (self.velocity[0], -self.velocity[1])
 
     def click(self):
         ''' User clicked the puck '''

@@ -24,12 +24,12 @@ def setup_lvl1():
     pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
     # Draw Pucks
-    puck1 = Puck((300, 500), (0.5,0.5),(255,0,255), 10000)
-    puck2 = Puck((300, 400), (0.5,0.5),(255,0,255), 10000)
-    puck3 = Puck((300, 300), (0.5,0.5),(255,0,255), 10000)
-    puck4 = Puck((500, 500), (0.5,0.5),(255,0,0), 10000)
-    puck5 = Puck((500, 400), (0.5,0.5),(255,0,0), 10000)
-    puck6 = Puck((500, 300), (0.5,0.5),(255,0,0), 10000)
+    puck1 = Puck((300, 500), (1,1),(255,0,255), 1)
+    puck2 = Puck((300, 400), (1,1),(255,0,255), 1)
+    puck3 = Puck((300, 300), (1,1),(255,0,255), 1)
+    puck4 = Puck((500, 500), (1,1),(255,0,0), 1)
+    puck5 = Puck((500, 400), (1,1),(255,0,0), 1)
+    puck6 = Puck((500, 300), (1,1),(255,0,0), 1)
 
     PUCKS.append(puck1)
     PUCKS.append(puck2)
@@ -113,42 +113,45 @@ def main():
             # Check for collisions after shooting the pucks
             # Draw Water
             SCREEN.fill((0, 0, 255))
-
+            
             # Draw Island
             pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
+            for i in range(len(PUCKS)):
+                x,y = PUCKS[i].position
+                if x >= (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) - PUCKS[i].radius or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2) + PUCKS[i].radius:
+                    PUCKS[i].velocity = (-PUCKS[i].velocity[0], PUCKS[i].velocity[1])
+                if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) - PUCKS[i].radius or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2) + PUCKS[i].radius:
+                    PUCKS[i].velocity = (PUCKS[i].velocity[0], -PUCKS[i].velocity[1])
 
 
             for i in range(len(PUCKS)):
                 for j in range(i+1, len(PUCKS)):
                     if PUCKS[i].col_circle(PUCKS[j].position):  
 
-                        vx1i = PUCKS[i].velocity[0]
-                        vy1i = PUCKS[i].velocity[1]
-                        vx2i = PUCKS[j].velocity[0]
-                        vy2i = PUCKS[j].velocity[1]
-                        m1 = PUCKS[i].mass
-                        m2 = PUCKS[j].mass
+                        vx1i = PUCKS[i].velocity[0] # 1
+                        vy1i = PUCKS[i].velocity[1] # 1
+                        vx2i = PUCKS[j].velocity[0] # 1
+                        vy2i = PUCKS[j].velocity[1] # 1
+                        m1 = PUCKS[i].mass # 1
+                        m2 = PUCKS[j].mass # 1
                         x1,y1 = PUCKS[i].position
                         x2,y2 = PUCKS[j].position
 
+
                         const1 = ((2*m2) / (m1 + m2)) * (dot_product([vx1i-vx2i, vy1i-vy2i], [x1-x2, y1-y2])) / (magnitude([x1-x2, y1-y2]))
-                        temp = [x1-x2, y1-y2]
-                        for element in temp:
-                            element *= const1
-                        v1f = subtract_vectors([vx1i,vy1i], temp)
+                        vx1f = vx1i - (const1 * (x1-x2))
+                        vy1f = vy1i - (const1 * (y1-y2))                            
+
+                        print([vx1i, const1, x1, x2])
+                        print((vx1f,vy1f))
 
                         const2 = ((2*m1) / (m1 + m2)) * (dot_product([vx2i-vx1i, vy2i-vy1i], [x2-x1, y2-y1])) / (magnitude([x2-x1, y2-y1]))
-                        temp = [x2-x1,y2-y1]
-                        for element in temp:
-                            element *= const2
-                        v2f = subtract_vectors([vx2i,vy2i], temp)
+                        vx2f = vx2i - (const2 * (x2-x1))
+                        vy2f = vy2i - (const2 * (y2-y1))
 
-                        # print(v1f)
-                        # print(v2f)
-
-                        PUCKS[i].velocity = v1f
-                        PUCKS[j].velocity = v2f
+                        PUCKS[i].velocity = (vx1f,vy1f)
+                        PUCKS[j].velocity = (vx2f, vy2f)
 
                         print(PUCKS[i].velocity)
                         print(PUCKS[j].velocity)
@@ -163,7 +166,7 @@ def main():
         # Flip / Update the Display
         pygame.display.flip()
         pygame.display.update()
-
+    
     pygame.quit()
 
 
