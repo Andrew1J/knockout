@@ -44,9 +44,6 @@ def setup_lvl1():
     PUCKS.append(puck5)
     PUCKS.append(puck6)
 
-    for puck in PUCKS:
-        print(puck.player)
-
 
 def display_information():
     ''' Displays the velocities after each collision in the side bar '''
@@ -154,7 +151,15 @@ def main():
             running = False
 
         if DRAW_ARROW_STATE: # Drawing arrows phase
-            
+
+            # Check whose turn it is
+            drawn_p1_sprites = [puck for puck in PUCKS if (puck.player == 1 and not puck.hasLine)]
+            drawn_p2_sprites = [puck for puck in PUCKS if (puck.player == 2 and not puck.hasLine)]
+            if len(drawn_p1_sprites) == 0:
+                PLAYERONETURN = False
+            if len(drawn_p2_sprites) == 0:
+                PLAYERONETURN = True
+
             # Draw whose turn it is on the screen
             if PLAYERONETURN:
                 font = pygame.font.SysFont(None, 24)
@@ -177,17 +182,14 @@ def main():
                     clicked_sprites = [puck for puck in PUCKS if puck.col_circle(pos1)]
 
                     for puck in clicked_sprites:
-                        if ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
+                        if not puck.hasLine and ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
                             puck.click()
 
                 if event.type == pygame.MOUSEBUTTONUP: # Draw arrow
                     pos2 = pygame.mouse.get_pos()
 
                     for puck in clicked_sprites:
-                        print(not PLAYERONETURN)
-                        # print(((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)))
                         if not puck.hasLine and ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
-                            # print(puck.get_pos())
                             pygame.draw.line(SCREEN, (0,0,0), puck.get_pos(), pos2)
                             ARROWS.append((puck.get_pos(),(pos2[0]-puck.get_pos()[0], pos2[1] - puck.get_pos()[1])))
                             puck.hasLine = True
@@ -198,14 +200,8 @@ def main():
 
                 if (event.type == pygame.KEYDOWN and event.key == pygame.K_a): # Check for game shoot phase #TODO REPLACE WITH BUTTON
                     DRAW_ARROW_STATE = False
+                    PLAYERONETURN = True
 
-            # Check whose turn it is
-            drawn_p1_sprites = [puck for puck in PUCKS if (puck.player == 1 and not puck.hasLine)]
-            drawn_p2_sprites = [puck for puck in PUCKS if (puck.player == 2 and not puck.hasLine)]
-            if len(drawn_p1_sprites) == 0:
-                PLAYERONETURN = False
-            if len(drawn_p2_sprites) == 0:
-                PLAYERONETURN = True
 
         else: # Check for collisions after shooting the pucks
 
