@@ -12,7 +12,6 @@ class Puck(pygame.sprite.Sprite):
         self.position = position
         self.color = color
         self.radius = PUCK_RADIUS
-        self.onIsland = True
         self.isClicked = False
         self.hasLine = False
         self.velocity = velocity

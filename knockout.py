@@ -5,6 +5,7 @@ import math
 pygame.init()
 clock = pygame.time.Clock()
 
+
 # Global Variables
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 800
 ISLAND_WIDTH, ISLAND_HEIGHT = 400, 400
@@ -13,7 +14,9 @@ PUCKS = []
 PLAYER_ONE_TURN = True
 ARROWS = []
 GRAVITY = -2
+ARROW_SPEED_CONSTANT = 0.01
 mu = 0.5
+
 
 # Set Up Levels
 def setup_lvl1():
@@ -33,6 +36,7 @@ def setup_lvl1():
     puck5 = Puck((500, 400), (0,0),(255,0,0), 1)
     puck6 = Puck((500, 300), (0,0),(255,0,0), 1)
 
+    # Add pucks to the list of pucks
     PUCKS.append(puck1)
     PUCKS.append(puck2)
     PUCKS.append(puck3)
@@ -43,10 +47,13 @@ def setup_lvl1():
 
 def display_information():
     ''' Displays the velocities after each collision in the side bar '''
+    
     pass
 
 
 def outofbounds(coords):
+    ''' Returns true if the puck is out of bounds '''
+
     x,y = coords
 
     if x > (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2):
@@ -57,17 +64,51 @@ def outofbounds(coords):
 
     return False
 
+
 def dot_product(v1, v2):
+    '''Returns the dot product of two vectors'''
+
     return v1[0] * v2[0] + v1[1] * v2[1]
 
-def magnitude(v):
+
+def magnitude_squared(v):
+    '''Returns the magnitude squared of a vector'''
+
     return (v[0]*v[0] + v[1]*v[1])
 
+
 def subtract_vectors(v1,v2):
+    '''Subtracts two vectors'''
+
     return (v1[0] - v2[0], v1[1] - v2[1])
 
+
 def get_angle_of_motion(v1,v2):
+    '''Returns the angle of motion between two vectors'''
+
     return math.atan(v2/(v1+.000001))
+
+
+def collision_response(puck1, puck2):
+    vx1i = puck1.velocity[0] 
+    vy1i = puck1.velocity[1] 
+    vx2i = puck2.velocity[0] 
+    vy2i = puck2.velocity[1] 
+    m1 =  puck1.mass 
+    m2 = puck2.mass 
+    x1,y1 = puck1.position
+    x2,y2 = puck2.position
+
+    const1 = ((2*m2) / (m1 + m2)) * (dot_product([vx1i-vx2i, vy1i-vy2i], [x1-x2, y1-y2])) / (magnitude_squared([x1-x2, y1-y2])+.000001)
+    vx1f = vx1i - (const1 * (x1-x2))
+    vy1f = vy1i - (const1 * (y1-y2))
+
+    const2 = ((2*m1) / (m1 + m2)) * (dot_product([vx2i-vx1i, vy2i-vy1i], [x2-x1, y2-y1])) / (magnitude_squared([x2-x1, y2-y1])+.000001)
+    vx2f = vx2i - (const2 * (x2-x1))
+    vy2f = vy2i - (const2 * (y2-y1))
+
+    return [vx1f, vy1f], [vx2f, vy2f]
+
 
 def main():
     ''' Main Function'''
@@ -82,9 +123,9 @@ def main():
     # MAIN GAME LOOP
     running = True
     while running:
-        clock.tick(60)
+        clock.tick(120)
 
-        if DRAW_ARROW_STATE:
+        if DRAW_ARROW_STATE: # Drawing arrows phase
 
             # Main Event Handling
             for event in pygame.event.get():
@@ -114,19 +155,19 @@ def main():
 
                 if (event.type == pygame.KEYDOWN and event.key == pygame.K_a): # Check for game quit()
                     DRAW_ARROW_STATE = False
-        else:
-            # Check for collisions after shooting the pucks
+
+        else: # Check for collisions after shooting the pucks
+
             # Draw Water
             SCREEN.fill((0, 0, 255))
 
             # Draw Island
             pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
-            # FOR TESTING PURPOSES
+            # Puck gets removed if its out of bounds
             for i in range(len(PUCKS)):
                 x,y = PUCKS[i].position
 
-                ''' PUCK GETS REMOVED WHEN ITS OVER THE BORDER '''
                 if x >= (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) - PUCKS[i].radius or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2) + PUCKS[i].radius:
                     # PUCKS[i].velocity = (-PUCKS[i].velocity[0], PUCKS[i].velocity[1])
                     PUCKS[i].position = (-1,-1)
@@ -138,37 +179,22 @@ def main():
                     PUCKS[i].velocity = (0,0)
                     PUCKS[i].onIsland = False
 
+            # Calculate the pucks initial velocities based on arrows
             for i in range(len(PUCKS)):
                 for arrow in ARROWS:
                     if PUCKS[i].position == arrow[0]:
-                        PUCKS[i].velocity = (arrow[1][0] * 0.01, arrow[1][1] * 0.01)
+                        PUCKS[i].velocity = (arrow[1][0] * ARROW_SPEED_CONSTANT, arrow[1][1] * ARROW_SPEED_CONSTANT)
                 PUCKS[i].hasLine = False
 
             # Check for collisions
             for i in range(len(PUCKS)):
                 for j in range(i+1, len(PUCKS)):
-                    if PUCKS[i].col_circle(PUCKS[j].position):
+                    if PUCKS[i].col_circle(PUCKS[j].position): # Check for collision
+                        v1f, v2f = collision_response(PUCKS[i], PUCKS[j]) # Calculate the new velocities
+                        PUCKS[i].velocity = v1f
+                        PUCKS[j].velocity = v2f
 
-                        vx1i = PUCKS[i].velocity[0] # 1
-                        vy1i = PUCKS[i].velocity[1] # 1
-                        vx2i = PUCKS[j].velocity[0] # 1
-                        vy2i = PUCKS[j].velocity[1] # 1
-                        m1 = PUCKS[i].mass # 1
-                        m2 = PUCKS[j].mass # 1
-                        x1,y1 = PUCKS[i].position
-                        x2,y2 = PUCKS[j].position
-
-                        const1 = ((2*m2) / (m1 + m2)) * (dot_product([vx1i-vx2i, vy1i-vy2i], [x1-x2, y1-y2])) / (magnitude([x1-x2, y1-y2])+.000001)
-                        vx1f = vx1i - (const1 * (x1-x2))
-                        vy1f = vy1i - (const1 * (y1-y2))
-
-                        const2 = ((2*m1) / (m1 + m2)) * (dot_product([vx2i-vx1i, vy2i-vy1i], [x2-x1, y2-y1])) / (magnitude([x2-x1, y2-y1])+.000001)
-                        vx2f = vx2i - (const2 * (x2-x1))
-                        vy2f = vy2i - (const2 * (y2-y1))
-
-                        PUCKS[i].velocity = (vx1f,vy1f)
-                        PUCKS[j].velocity = (vx2f, vy2f)
-
+            # Apply frictional accelerations to the velocities
             for puck in PUCKS:
                 ax = mu * GRAVITY * math.cos(get_angle_of_motion(puck.velocity[0], puck.velocity[1]))
                 ay = mu * GRAVITY * math.sin(get_angle_of_motion(puck.velocity[0], puck.velocity[1]))
@@ -177,15 +203,13 @@ def main():
                 vx += ax * .01
                 vy += ay * .01
                 puck.velocity = (vx,vy)
-                print(puck.acceleration)
                 puck.move()
 
+            # Check if all pucks stopped (changing game state back)
             STOPPED = True
-
             for i in range(len(PUCKS)):
                 if PUCKS[i].velocity[0] != 0 and PUCKS[i].velocity[1] != 0:
                     STOPPED = False
-
             if STOPPED:
                 DRAW_ARROW_STATE = not DRAW_ARROW_STATE
 
