@@ -60,7 +60,3 @@ class Puck(pygame.sprite.Sprite):
         if distance <= 2*PUCK_RADIUS:
             return True
         return False
-
-    def col(self, pucks):
-        '''Checking for collision'''
-        return (self, pygame.sprite.spritecollideany(self, pucks, collided = None))
