@@ -15,7 +15,7 @@ PLAYER_ONE_TURN = True
 ARROWS = []
 GRAVITY = -2
 ARROW_SPEED_CONSTANT = 0.01
-mu = 0.5
+mu = 0.3
 
 
 # Set Up Levels
@@ -90,6 +90,8 @@ def get_angle_of_motion(v1,v2):
 
 
 def collision_response(puck1, puck2):
+    '''Calculates the final velocities between two pucks after they collide'''
+
     vx1i = puck1.velocity[0] 
     vy1i = puck1.velocity[1] 
     vx2i = puck2.velocity[0] 
@@ -151,8 +153,6 @@ def main():
                             puck.hasLine = True
                         puck.click()
 
-                    print(ARROWS)
-
                 if (event.type == pygame.KEYDOWN and event.key == pygame.K_a): # Check for game quit()
                     DRAW_ARROW_STATE = False
 
@@ -196,13 +196,21 @@ def main():
 
             # Apply frictional accelerations to the velocities
             for puck in PUCKS:
-                ax = mu * GRAVITY * math.cos(get_angle_of_motion(puck.velocity[0], puck.velocity[1]))
-                ay = mu * GRAVITY * math.sin(get_angle_of_motion(puck.velocity[0], puck.velocity[1]))
+                ax = mu * GRAVITY * math.cos(get_angle_of_motion(abs(puck.velocity[0]), abs(puck.velocity[1])))
+                ay = mu * GRAVITY * math.sin(get_angle_of_motion(abs(puck.velocity[0]), abs(puck.velocity[1])))
                 puck.acceleration = ax, ay
                 vx,vy = puck.velocity
-                vx += ax * .01
-                vy += ay * .01
+                if vx > 0:
+                    vx += ax * .01
+                elif vx < 0:
+                    vx -= ax * .01
+                if vy > 0:
+                    vy += ay * .01
+                elif vy < 0:
+                    vy -= ay * .01
                 puck.velocity = (vx,vy)
+                if abs(vx) < 0.01 and abs(vy) < 0.01:
+                    puck.velocity = (0,0)
                 puck.move()
 
             # Check if all pucks stopped (changing game state back)
