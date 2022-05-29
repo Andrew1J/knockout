@@ -169,9 +169,9 @@ def main():
             for i in range(len(puckscopy)):
                 x,y = puckscopy[i].position
 
-                if x >= (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) + puckscopy[i].radius or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2) - puckscopy[i].radius:
+                if x >= (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2):
                     PUCKS.pop(i)
-                if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) + puckscopy[i].radius or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2) - puckscopy[i].radius:
+                if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2):
                     PUCKS.pop(i)
 
             # Calculate the pucks initial velocities based on arrows
