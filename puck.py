@@ -7,11 +7,11 @@ ISLAND_WIDTH, ISLAND_HEIGHT = 400, 400
 
 # Defines a class for the pucks
 class Puck(pygame.sprite.Sprite):
-    def __init__(self, position, velocity, color, mass, player):
+    def __init__(self, position, velocity, color, mass, player, radius):
         pygame.sprite.Sprite.__init__(self)
         self.position = position
         self.color = color
-        self.radius = PUCK_RADIUS
+        self.radius = radius
         self.isClicked = False
         self.hasLine = False
         self.velocity = velocity

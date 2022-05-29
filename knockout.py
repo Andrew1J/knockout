@@ -11,6 +11,7 @@ SCREEN_WIDTH, SCREEN_HEIGHT = 800, 800
 ISLAND_WIDTH, ISLAND_HEIGHT = 400, 400
 SCREEN = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 PUCKS = []
+PUCK_RADIUS = 10
 PLAYER_ONE_TURN = True
 ARROWS = []
 GRAVITY = -2
@@ -29,12 +30,12 @@ def setup_lvl1():
     pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
     # Draw Pucks
-    puck1 = Puck((300, 500), (0,0),(255,0,255), 1, 1)
-    puck2 = Puck((300, 400), (0,0),(255,0,255), 1, 1)
-    puck3 = Puck((300, 300), (0,0),(255,0,255), 1, 1)
-    puck4 = Puck((500, 500), (0,0),(255,0,0), 1, 2)
-    puck5 = Puck((500, 400), (0,0),(255,0,0), 1, 2)
-    puck6 = Puck((500, 300), (0,0),(255,0,0), 1, 2)
+    puck1 = Puck((300, 500), (0,0),(255,0,255), 1, 1, PUCK_RADIUS)
+    puck2 = Puck((300, 400), (0,0),(255,0,255), 1, 1, PUCK_RADIUS)
+    puck3 = Puck((300, 300), (0,0),(255,0,255), 1, 1, PUCK_RADIUS)
+    puck4 = Puck((500, 500), (0,0),(255,0,0), 1, 2, PUCK_RADIUS)
+    puck5 = Puck((500, 400), (0,0),(255,0,0), 1, 2, PUCK_RADIUS)
+    puck6 = Puck((500, 300), (0,0),(255,0,0), 1, 2, PUCK_RADIUS)
 
     # Add pucks to the list of pucks
     PUCKS.append(puck1)
@@ -64,12 +65,15 @@ def game_end(pucks):
         SCREEN.fill((0, 0, 255))
         font = pygame.font.SysFont(None, 100)
         img = font.render('Player 2 Won', True, (255,255,255))
-        SCREEN.blit(img, (0,0))
+        imgx, imgy = img.get_size()
+        SCREEN.blit(img, (SCREEN_WIDTH/2 - imgx/2, SCREEN_HEIGHT/2 - imgy/2))
     if cntp2 == 0:
         SCREEN.fill((0, 0, 255))
         font = pygame.font.SysFont(None, 100)
         img = font.render('Player 1 Won', True, (255,255,255))
-        SCREEN.blit(img, (0,0))
+        imgx, imgy = img.get_size()
+        SCREEN.blit(img, (SCREEN_WIDTH/2 - imgx/2, SCREEN_HEIGHT/2 - imgy/2))
+            
 
 def outofbounds(coords):
     ''' Returns true if the puck is out of bounds '''
