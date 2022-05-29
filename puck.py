@@ -56,7 +56,7 @@ class Puck(pygame.sprite.Sprite):
 
         distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
 
-        if distance <= PUCK_RADIUS:
+        if distance <= 2*PUCK_RADIUS:
             return True
         return False
 
