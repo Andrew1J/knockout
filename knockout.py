@@ -29,12 +29,12 @@ def setup_lvl1():
     pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
     # Draw Pucks
-    puck1 = Puck((300, 500), (0,0),(255,0,255), 1)
-    puck2 = Puck((300, 400), (0,0),(255,0,255), 1)
-    puck3 = Puck((300, 300), (0,0),(255,0,255), 1)
-    puck4 = Puck((500, 500), (0,0),(255,0,0), 1)
-    puck5 = Puck((500, 400), (0,0),(255,0,0), 1)
-    puck6 = Puck((500, 300), (0,0),(255,0,0), 1)
+    puck1 = Puck((300, 500), (0,0),(255,0,255), 1, 1)
+    puck2 = Puck((300, 400), (0,0),(255,0,255), 1, 1)
+    puck3 = Puck((300, 300), (0,0),(255,0,255), 1, 1)
+    puck4 = Puck((500, 500), (0,0),(255,0,0), 1, 2)
+    puck5 = Puck((500, 400), (0,0),(255,0,0), 1, 2)
+    puck6 = Puck((500, 300), (0,0),(255,0,0), 1, 2)
 
     # Add pucks to the list of pucks
     PUCKS.append(puck1)
@@ -127,7 +127,15 @@ def main():
     while running:
         clock.tick(120)
 
+        # End game if no pucks are left
+        if len(PUCKS) == 0:
+            running = False
+
         if DRAW_ARROW_STATE: # Drawing arrows phase
+            font = pygame.font.SysFont(None, 24)
+            img = font.render('Player 1\'s Turn', True, (255,255,255))
+            SCREEN.blit(img, (20, 20))
+
 
             # Main Event Handling
             for event in pygame.event.get():
@@ -170,10 +178,10 @@ def main():
                 x,y = puckscopy[i].position
 
                 if x >= (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2):
-                    PUCKS.pop(i)
+                    PUCKS.remove(puckscopy[i])
                 if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2):
-                    PUCKS.pop(i)
-
+                    PUCKS.remove(puckscopy[i])
+            
             # Calculate the pucks initial velocities based on arrows
             for i in range(len(PUCKS)):
                 for arrow in ARROWS:
