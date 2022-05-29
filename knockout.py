@@ -147,7 +147,7 @@ def main():
                     pos2 = pygame.mouse.get_pos()
 
                     for puck in clicked_sprites:
-                        if not outofbounds(pos2) and not puck.hasLine:
+                        if not puck.hasLine:
                             pygame.draw.line(SCREEN, (0,0,0), puck.get_pos(), pos2)
                             ARROWS.append((puck.get_pos(),(pos2[0]-puck.get_pos()[0], pos2[1] - puck.get_pos()[1])))
                             puck.hasLine = True
@@ -163,21 +163,16 @@ def main():
 
             # Draw Island
             pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
+            
+            # TODO: Puck gets removed if its out of bounds
+            puckscopy = PUCKS.copy()
+            for i in range(len(puckscopy)):
+                x,y = puckscopy[i].position
 
-            # Puck gets removed if its out of bounds
-            for i in range(len(PUCKS)):
-                x,y = PUCKS[i].position
-
-                if x >= (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) - PUCKS[i].radius or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2) + PUCKS[i].radius:
-                    # PUCKS[i].velocity = (-PUCKS[i].velocity[0], PUCKS[i].velocity[1])
-                    PUCKS[i].position = (-1,-1)
-                    PUCKS[i].velocity = (0,0)
-                    PUCKS[i].onIsland = False
-                if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) - PUCKS[i].radius or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2) + PUCKS[i].radius:
-                    # PUCKS[i].velocity = (PUCKS[i].velocity[0], -PUCKS[i].velocity[1])
-                    PUCKS[i].position = (-1,-1)
-                    PUCKS[i].velocity = (0,0)
-                    PUCKS[i].onIsland = False
+                if x >= (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) + puckscopy[i].radius or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2) - puckscopy[i].radius:
+                    PUCKS.pop(i)
+                if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) + puckscopy[i].radius or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2) - puckscopy[i].radius:
+                    PUCKS.pop(i)
 
             # Calculate the pucks initial velocities based on arrows
             for i in range(len(PUCKS)):
