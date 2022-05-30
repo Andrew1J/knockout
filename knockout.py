@@ -9,6 +9,7 @@ clock = pygame.time.Clock()
 # Global Variables
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 800
 ISLAND_WIDTH, ISLAND_HEIGHT = 400, 400
+BUTTON_WIDTH, BUTTON_HEIGHT = 140, 40
 SCREEN = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 PUCKS = []
 PUCK_RADIUS = 10
@@ -33,6 +34,10 @@ def setup_lvl1():
 
     # Draw Island
     pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
+
+    # Display ice button
+    pygame.draw.rect(SCREEN, (100,100,100),[SCREEN_WIDTH/6,5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
+    SCREEN.blit(text , (SCREEN_WIDTH/6 + 50,5 * (SCREEN_HEIGHT/6) + 5))
 
     # Draw Pucks
     puck1 = Puck((300, 500), (0,0),(255,0,255), 1, 1, PUCK_RADIUS)
@@ -188,16 +193,12 @@ def main():
 
             # Main Event Handling
             for event in pygame.event.get():
-
+                global mu
                 if (event.type == pygame.KEYDOWN and event.key == pygame.K_q) or event.type == pygame.QUIT: # Check for game quit()
                     running = False
 
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check for mouse click
                     pos1 = pygame.mouse.get_pos()
-
-                    # Ice button
-                    if SCREEN_WIDTH/6 <= pos1[0] <= SCREEN_WIDTH/2+140 and SCREEN_HEIGHT/6 <= pos1[1] <= SCREEN_HEIGHT/6+40:
-                        mu = 0.05
 
                     clicked_sprites = [puck for puck in PUCKS if puck.col_circle(pos1)]
 
@@ -207,6 +208,13 @@ def main():
 
                 if event.type == pygame.MOUSEBUTTONUP: # Draw arrow
                     pos2 = pygame.mouse.get_pos()
+                    print(pos2)
+                    print(SCREEN_WIDTH/6 <= pos2[0] <= SCREEN_WIDTH/2+BUTTON_WIDTH)
+
+                    # Ice button
+                    if SCREEN_WIDTH/6 <= pos2[0] <= SCREEN_WIDTH/2+BUTTON_WIDTH and 5*SCREEN_HEIGHT/6 <= pos2[1] <= 5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
+                        mu = 0.05
+                        print("mu was set to " + str(mu))
 
                     for puck in clicked_sprites:
                         if not puck.hasLine and ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
@@ -271,7 +279,7 @@ def main():
                 elif vy < 0:
                     vy -= ay * .01
                 puck.velocity = (vx,vy)
-                if abs(vx) < 0.001 and abs(vy) < 0.001:
+                if abs(vx) < 0.005 and abs(vy) < 0.005:
                     puck.velocity = (0,0)
                 puck.move()
 
@@ -282,10 +290,6 @@ def main():
                     STOPPED = False
             if STOPPED:
                 DRAW_ARROW_STATE = not DRAW_ARROW_STATE
-
-        # Display button
-        pygame.draw.rect(SCREEN, (100,100,100),[SCREEN_WIDTH/6,5 * (SCREEN_HEIGHT/6),140,40])
-        SCREEN.blit(text , (SCREEN_WIDTH/6 + 50,5 * (SCREEN_HEIGHT/6) + 5))
 
         # Draw Pucks To Screen
         for puck in PUCKS:
