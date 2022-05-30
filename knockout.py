@@ -19,11 +19,6 @@ GRAVITY = -9.8
 ARROW_SPEED_CONSTANT = 0.02
 mu = 0.1
 
-# Defining a font
-smallfont = pygame.font.SysFont('Corbel',35)
-
-# Rendering a text for ice button
-text = smallfont.render('Ice' , True , (255,255,255))
 
 # Set Up Levels
 def setup_lvl1():
@@ -34,10 +29,6 @@ def setup_lvl1():
 
     # Draw Island
     pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
-
-    # Display ice button
-    pygame.draw.rect(SCREEN, (100,100,100),[SCREEN_WIDTH/6,5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
-    SCREEN.blit(text , (SCREEN_WIDTH/6 + 50,5 * (SCREEN_HEIGHT/6) + 5))
 
     # Draw Pucks
     puck1 = Puck((300, 500), (0,0),(255,0,255), 1, 1, PUCK_RADIUS)
@@ -56,10 +47,36 @@ def setup_lvl1():
     PUCKS.append(puck6)
 
 
-def display_information():
+def display_buttons():
+    # Display ice button
+    smallfont = pygame.font.SysFont('Corbel',35)
+    text = smallfont.render('Ice' , True , (255,255,255))
+    pygame.draw.rect(SCREEN, (100,100,100),[SCREEN_WIDTH/6,5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
+    SCREEN.blit(text , (SCREEN_WIDTH/6 + 50,5 * (SCREEN_HEIGHT/6) + 5))
+
+    # Display steel button
+    pygame.draw.rect(SCREEN, (50,50,50),[2*SCREEN_WIDTH/6,5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
+    text = smallfont.render('Steel' , True , (255,255,255))
+    SCREEN.blit(text , (2*SCREEN_WIDTH/6 + 40,5 * (SCREEN_HEIGHT/6) + 5))
+
+    # Display rock button
+    pygame.draw.rect(SCREEN, (100,100,100),[3*SCREEN_WIDTH/6,5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
+    text = smallfont.render('Rock' , True , (255,255,255))
+    SCREEN.blit(text , (3*SCREEN_WIDTH/6 + 40,5 * (SCREEN_HEIGHT/6) + 5))
+
+    # Display wool button
+    pygame.draw.rect(SCREEN, (50,50,50),[4*SCREEN_WIDTH/6,5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
+    text = smallfont.render('Wool' , True , (255,255,255))
+    SCREEN.blit(text , (4*SCREEN_WIDTH/6 + 40,5 * (SCREEN_HEIGHT/6) + 5))
+
+
+def display_information(pucks):
     ''' Displays the velocities after each collision in the side bar '''
 
-    pass
+    for i in range(len(pucks)):
+        smallfont = pygame.font.SysFont('Corbel',15)
+        text = smallfont.render("PUCK " + str(i+1) + " Velocity: "+ str(round(pucks[i].velocity[0])) + ", " + str(round(pucks[i].velocity[1])) , True , (255,255,255))
+        SCREEN.blit(text , (6*SCREEN_WIDTH/8 + 50, (i+1) * (SCREEN_HEIGHT/9)))
 
 
 def game_end(pucks):
@@ -161,10 +178,15 @@ def main():
     # Set up the level
     setup_lvl1()
 
+    # Display information
+    display_information(PUCKS)
+
     # MAIN GAME LOOP
     running = True
     while running:
         clock.tick(120)
+
+        display_buttons()
 
         # End game if no pucks are left
         if len(PUCKS) == 0:
@@ -208,13 +230,27 @@ def main():
 
                 if event.type == pygame.MOUSEBUTTONUP: # Draw arrow
                     pos2 = pygame.mouse.get_pos()
-                    print(pos2)
-                    print(SCREEN_WIDTH/6 <= pos2[0] <= SCREEN_WIDTH/2+BUTTON_WIDTH)
 
                     # Ice button
-                    if SCREEN_WIDTH/6 <= pos2[0] <= SCREEN_WIDTH/2+BUTTON_WIDTH and 5*SCREEN_HEIGHT/6 <= pos2[1] <= 5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
+                    if SCREEN_WIDTH/6 <= pos2[0] <= SCREEN_WIDTH/6+BUTTON_WIDTH and 5*SCREEN_HEIGHT/6 <= pos2[1] <= 5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
                         mu = 0.05
                         print("mu was set to " + str(mu))
+
+                    # steel button
+                    if 2*SCREEN_WIDTH/6 <= pos2[0] <= 2*SCREEN_WIDTH/6+BUTTON_WIDTH and 5*SCREEN_HEIGHT/6 <= pos2[1] <= 5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
+                        mu = 0.1
+                        print("mu was set to " + str(mu))
+
+                    # rock button
+                    if 3*SCREEN_WIDTH/6 <= pos2[0] <= 3*SCREEN_WIDTH/6+BUTTON_WIDTH and 5*SCREEN_HEIGHT/6 <= pos2[1] <= 5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
+                        mu = 0.2
+                        print("mu was set to " + str(mu))
+
+                    # wool button
+                    if 4*SCREEN_WIDTH/6 <= pos2[0] <= 4*SCREEN_WIDTH/6+BUTTON_WIDTH and 5*SCREEN_HEIGHT/6 <= pos2[1] <= 5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
+                        mu = 0.3
+                        print("mu was set to " + str(mu))
+
 
                     for puck in clicked_sprites:
                         if not puck.hasLine and ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
@@ -238,6 +274,11 @@ def main():
 
             # Draw Island
             pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
+
+            display_buttons()
+
+            # Display information
+            display_information(PUCKS)
 
             # TODO: Puck gets removed if its out of bounds
             puckscopy = PUCKS.copy()
@@ -279,7 +320,7 @@ def main():
                 elif vy < 0:
                     vy -= ay * .01
                 puck.velocity = (vx,vy)
-                if abs(vx) < 0.005 and abs(vy) < 0.005:
+                if abs(vx) < 0.01 and abs(vy) < 0.01: #TODO FIX HOW WE HANDLE STOPPING
                     puck.velocity = (0,0)
                 puck.move()
 
