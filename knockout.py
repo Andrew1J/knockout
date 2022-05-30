@@ -2,6 +2,7 @@ import pygame
 import sys
 from puck import Puck
 import math
+import numpy as np
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -312,6 +313,18 @@ def main():
                 puck.acceleration = ax, ay
                 vx,vy = puck.velocity
                 if vx > 0:
+                    if np.sign(vx + ax * 0.01) != np.sign(vx):
+                        vx = 0
+                elif vx < 0:
+                    if np.sign(vx - ax * 0.01) != np.sign(vx):
+                        vx = 0
+                if vy > 0:
+                    if np.sign(vy + ay * 0.01) != np.sign(vy):
+                        vy = 0
+                elif vy < 0:
+                    if np.sign(vy + ay * 0.01) != np.sign(vy):
+                        vy = 0
+                if vx > 0:
                     vx += ax * .01
                 elif vx < 0:
                     vx -= ax * .01
@@ -320,8 +333,9 @@ def main():
                 elif vy < 0:
                     vy -= ay * .01
                 puck.velocity = (vx,vy)
-                if abs(vx) < 0.01 and abs(vy) < 0.01: #TODO FIX HOW WE HANDLE STOPPING
-                    puck.velocity = (0,0)
+
+                # if abs(vx) < 0.01 and abs(vy) < 0.01: #TODO FIX HOW WE HANDLE STOPPING
+                #     puck.velocity = (0,0)
                 puck.move()
 
             # Check if all pucks stopped (changing game state back)
