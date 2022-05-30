@@ -14,10 +14,15 @@ PUCKS = []
 PUCK_RADIUS = 10
 PLAYER_ONE_TURN = True
 ARROWS = []
-GRAVITY = -2
-ARROW_SPEED_CONSTANT = 0.01
-mu = 0.3
+GRAVITY = -9.8
+ARROW_SPEED_CONSTANT = 0.02
+mu = 0.1
 
+# Defining a font
+smallfont = pygame.font.SysFont('Corbel',35)
+
+# Rendering a text for ice button
+text = smallfont.render('Ice' , True , (255,255,255))
 
 # Set Up Levels
 def setup_lvl1():
@@ -48,7 +53,7 @@ def setup_lvl1():
 
 def display_information():
     ''' Displays the velocities after each collision in the side bar '''
-    
+
     pass
 
 
@@ -79,7 +84,7 @@ def game_end(pucks):
         img = font.render('Player 1 Won', True, (0,0,0))
         imgx, imgy = img.get_size()
         SCREEN.blit(img, (SCREEN_WIDTH/2 - imgx/2, SCREEN_HEIGHT/2 - imgy/2))
-            
+
 
 def outofbounds(coords):
     ''' Returns true if the puck is out of bounds '''
@@ -122,12 +127,12 @@ def get_angle_of_motion(v1,v2):
 def collision_response(puck1, puck2):
     '''Calculates the final velocities between two pucks after they collide'''
 
-    vx1i = puck1.velocity[0] 
-    vy1i = puck1.velocity[1] 
-    vx2i = puck2.velocity[0] 
-    vy2i = puck2.velocity[1] 
-    m1 =  puck1.mass 
-    m2 = puck2.mass 
+    vx1i = puck1.velocity[0]
+    vy1i = puck1.velocity[1]
+    vx2i = puck2.velocity[0]
+    vy2i = puck2.velocity[1]
+    m1 =  puck1.mass
+    m2 = puck2.mass
     x1,y1 = puck1.position
     x2,y2 = puck2.position
 
@@ -189,6 +194,11 @@ def main():
 
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check for mouse click
                     pos1 = pygame.mouse.get_pos()
+
+                    # Ice button
+                    if SCREEN_WIDTH/6 <= pos1[0] <= SCREEN_WIDTH/2+140 and SCREEN_HEIGHT/6 <= pos1[1] <= SCREEN_HEIGHT/6+40:
+                        mu = 0.05
+
                     clicked_sprites = [puck for puck in PUCKS if puck.col_circle(pos1)]
 
                     for puck in clicked_sprites:
@@ -220,7 +230,7 @@ def main():
 
             # Draw Island
             pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
-            
+
             # TODO: Puck gets removed if its out of bounds
             puckscopy = PUCKS.copy()
             for i in range(len(puckscopy)):
@@ -230,7 +240,7 @@ def main():
                     PUCKS.remove(puckscopy[i])
                 if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2):
                     PUCKS.remove(puckscopy[i])
-            
+
             # Calculate the pucks initial velocities based on arrows
             for i in range(len(PUCKS)):
                 for arrow in ARROWS:
@@ -261,7 +271,7 @@ def main():
                 elif vy < 0:
                     vy -= ay * .01
                 puck.velocity = (vx,vy)
-                if abs(vx) < 0.01 and abs(vy) < 0.01:
+                if abs(vx) < 0.001 and abs(vy) < 0.001:
                     puck.velocity = (0,0)
                 puck.move()
 
@@ -273,11 +283,15 @@ def main():
             if STOPPED:
                 DRAW_ARROW_STATE = not DRAW_ARROW_STATE
 
+        # Display button
+        pygame.draw.rect(SCREEN, (100,100,100),[SCREEN_WIDTH/6,5 * (SCREEN_HEIGHT/6),140,40])
+        SCREEN.blit(text , (SCREEN_WIDTH/6 + 50,5 * (SCREEN_HEIGHT/6) + 5))
+
         # Draw Pucks To Screen
         for puck in PUCKS:
             puck.draw(SCREEN)
 
-        # Display end game screen if pucks fall off 
+        # Display end game screen if pucks fall off
         # TODO IMPLEMENT GAME RESTART
         game_end(PUCKS)
 
