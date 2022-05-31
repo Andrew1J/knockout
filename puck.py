@@ -15,6 +15,7 @@ class Puck(pygame.sprite.Sprite):
         self.isClicked = False
         self.hasLine = False
         self.velocity = velocity
+        self.onField = True
         self.mass = mass
         self.acceleration = (0,0)
         self.player = player

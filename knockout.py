@@ -276,14 +276,13 @@ def main():
             display_buttons()
 
             # TODO: Puck gets removed if its out of bounds
-            puckscopy = PUCKS.copy()
-            for i in range(len(puckscopy)):
-                x,y = puckscopy[i].position
+            for i in range(len(PUCKS)):
+                x,y = PUCKS[i].position
 
                 if x >= (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2):
-                    PUCKS.remove(puckscopy[i])
+                    PUCKS[i].onField = False
                 if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2):
-                    PUCKS.remove(puckscopy[i])
+                    PUCKS[i].onField = False
 
             # Calculate the pucks initial velocities based on arrows
             for i in range(len(PUCKS)):
@@ -316,7 +315,7 @@ def main():
                     if np.sign(vy + ay * 0.01) != np.sign(vy):
                         vy = 0
                 elif vy < 0:
-                    if np.sign(vy + ay * 0.01) != np.sign(vy):
+                    if np.sign(vy - ay * 0.01) != np.sign(vy):
                         vy = 0
                 if vx > 0:
                     vx += ax * .01
@@ -342,7 +341,10 @@ def main():
 
         # Draw Pucks To Screen
         for puck in PUCKS:
-            puck.draw(SCREEN)
+            if puck.onField:
+                puck.draw(SCREEN)
+            else:
+                puck.velocity = (0,0)
 
         # Display information
         display_information(PUCKS)
