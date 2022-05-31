@@ -76,7 +76,7 @@ def display_information(pucks):
 
     for i in range(len(pucks)):
         smallfont = pygame.font.SysFont('Corbel',15)
-        text = smallfont.render("PUCK " + str(i+1) + " Velocity: "+ str(round(pucks[i].velocity[0])) + ", " + str(round(pucks[i].velocity[1])) , True , (255,255,255))
+        text = smallfont.render("PUCK " + str(i+1) + " Velocity: "+ str(round(pucks[i].velocity[0], 2)) + ", " + str(round(pucks[i].velocity[1], 2)) , True , (255,255,255))
         SCREEN.blit(text , (6*SCREEN_WIDTH/8 + 50, (i+1) * (SCREEN_HEIGHT/9)))
 
 
@@ -94,8 +94,8 @@ def game_end(pucks):
         pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
         for puck in pucks:
             puck.draw(SCREEN)
-        font = pygame.font.SysFont(None, 100)
-        img = font.render('Player 2 Won', True, (0,0,0))
+        smallfont = pygame.font.SysFont('Corbel', 100)
+        img = smallfont.render('Player 2 Won', True, (0,0,0))
         imgx, imgy = img.get_size()
         SCREEN.blit(img, (SCREEN_WIDTH/2 - imgx/2, SCREEN_HEIGHT/2 - imgy/2))
     if cntp2 == 0:
@@ -103,8 +103,8 @@ def game_end(pucks):
         pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
         for puck in pucks:
             puck.draw(SCREEN)
-        font = pygame.font.SysFont(None, 100)
-        img = font.render('Player 1 Won', True, (0,0,0))
+        smallfont = pygame.font.SysFont('Corbel', 100)
+        img = smallfont.render('Player 1 Won', True, (0,0,0))
         imgx, imgy = img.get_size()
         SCREEN.blit(img, (SCREEN_WIDTH/2 - imgx/2, SCREEN_HEIGHT/2 - imgy/2))
 
@@ -179,9 +179,6 @@ def main():
     # Set up the level
     setup_lvl1()
 
-    # Display information
-    display_information(PUCKS)
-
     # MAIN GAME LOOP
     running = True
     while running:
@@ -205,12 +202,12 @@ def main():
 
             # Draw whose turn it is on the screen
             if PLAYERONETURN:
-                font = pygame.font.SysFont(None, 24)
-                img = font.render('Player 1\'s Turn', True, (255,255,255))
+                smallfont = pygame.font.SysFont('Corbel', 24)
+                img = smallfont.render('Player 1\'s Turn', True, (255,255,255))
                 SCREEN.blit(img, (20, 20))
             else:
-                font = pygame.font.SysFont(None, 24)
-                img = font.render('Player 2\'s Turn', True, (255,255,255))
+                smallfont = pygame.font.SysFont('Corbel', 24)
+                img = smallfont.render('Player 2\'s Turn', True, (255,255,255))
                 SCREEN.blit(img, (20, 20))
 
 
@@ -249,7 +246,7 @@ def main():
 
                     # wool button
                     if 4*SCREEN_WIDTH/6 <= pos2[0] <= 4*SCREEN_WIDTH/6+BUTTON_WIDTH and 5*SCREEN_HEIGHT/6 <= pos2[1] <= 5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
-                        mu = 0.3
+                        mu = 0.9
                         print("mu was set to " + str(mu))
 
 
@@ -277,9 +274,6 @@ def main():
             pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
             display_buttons()
-
-            # Display information
-            display_information(PUCKS)
 
             # TODO: Puck gets removed if its out of bounds
             puckscopy = PUCKS.copy()
@@ -349,6 +343,9 @@ def main():
         # Draw Pucks To Screen
         for puck in PUCKS:
             puck.draw(SCREEN)
+
+        # Display information
+        display_information(PUCKS)
 
         # Display end game screen if pucks fall off
         # TODO IMPLEMENT GAME RESTART
