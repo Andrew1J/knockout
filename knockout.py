@@ -55,7 +55,6 @@ def display_buttons():
     # Display buttons
     for i, mat in enumerate(field_types):
         text = smallfont.render(mat , True , (255,255,255))
-        print(i % 2)
         if i % 2 == 0:
             if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5 * (SCREEN_HEIGHT/6)+40:
                 pygame.draw.rect(SCREEN, (170,170,170),[(i+1) * (SCREEN_WIDTH/6),5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
