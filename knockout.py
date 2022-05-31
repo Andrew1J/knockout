@@ -32,12 +32,12 @@ def setup_lvl1():
     pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
     # Draw Pucks
-    puck1 = Puck((300, 500), (0,0),(255,0,255), 1, 1, PUCK_RADIUS)
-    puck2 = Puck((300, 400), (0,0),(255,0,255), 1, 1, PUCK_RADIUS)
-    puck3 = Puck((300, 300), (0,0),(255,0,255), 1, 1, PUCK_RADIUS)
-    puck4 = Puck((500, 500), (0,0),(255,0,0), 1, 2, PUCK_RADIUS)
-    puck5 = Puck((500, 400), (0,0),(255,0,0), 1, 2, PUCK_RADIUS)
-    puck6 = Puck((500, 300), (0,0),(255,0,0), 1, 2, PUCK_RADIUS)
+    puck1 = Puck((300, 300), (0,0),(255,0,255), 1, 1, PUCK_RADIUS, "A")
+    puck2 = Puck((300, 400), (0,0),(255,0,255), 1, 1, PUCK_RADIUS, "B")
+    puck3 = Puck((300, 500), (0,0),(255,0,255), 1, 1, PUCK_RADIUS, "C")
+    puck4 = Puck((500, 300), (0,0),(255,0,0), 1, 2, PUCK_RADIUS, "D")
+    puck5 = Puck((500, 400), (0,0),(255,0,0), 1, 2, PUCK_RADIUS, "E")
+    puck6 = Puck((500, 500), (0,0),(255,0,0), 1, 2, PUCK_RADIUS, "F")
 
     # Add pucks to the list of pucks
     PUCKS.append(puck1)
@@ -74,10 +74,13 @@ def display_buttons():
 def display_information(pucks):
     ''' Displays the velocities after each collision in the side bar '''
 
+    smallfont = pygame.font.SysFont('Corbel',20)
     for i in range(len(pucks)):
-        smallfont = pygame.font.SysFont('Corbel',15)
-        text = smallfont.render("PUCK " + str(i+1) + " Velocity: "+ str(round(pucks[i].velocity[0], 2)) + ", " + str(round(pucks[i].velocity[1], 2)) , True , (255,255,255))
-        SCREEN.blit(text , (6*SCREEN_WIDTH/8 + 50, (i+1) * (SCREEN_HEIGHT/9)))
+        if pucks[i].onField:
+            text = smallfont.render("PUCK " + str(pucks[i].id) + " Velocity: "+ str(round(pucks[i].velocity[0], 2)) + ", " + str(round(pucks[i].velocity[1], 2)) , True , (255,255,255))
+        else:
+            text = smallfont.render("PUCK " + str(pucks[i].id) + " Velocity: "+ str(round(pucks[i].velocity[0], 2)) + ", " + str(round(pucks[i].velocity[1], 2)) , True , (255,0,0))
+        SCREEN.blit(text , (72*SCREEN_WIDTH/100 + 50, (i+1) * (SCREEN_HEIGHT/9)))
 
 
 def game_end(pucks):
@@ -85,15 +88,16 @@ def game_end(pucks):
     cntp1 = 0
     cntp2 = 0
     for puck in pucks:
-        if puck.player == 1:
+        if puck.player == 1 and puck.onField:
             cntp1 += 1
-        if puck.player == 2:
+        if puck.player == 2 and puck.onField:
             cntp2 += 1
     if cntp1 == 0:
         SCREEN.fill((0, 0, 255))
         pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
-        for puck in pucks:
-            puck.draw(SCREEN)
+        for puck in PUCKS:
+            if puck.onField:
+                puck.draw(SCREEN)
         smallfont = pygame.font.SysFont('Corbel', 100)
         img = smallfont.render('Player 2 Won', True, (0,0,0))
         imgx, imgy = img.get_size()
@@ -101,8 +105,9 @@ def game_end(pucks):
     if cntp2 == 0:
         SCREEN.fill((0, 0, 255))
         pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
-        for puck in pucks:
-            puck.draw(SCREEN)
+        for puck in PUCKS:
+            if puck.onField:
+                puck.draw(SCREEN)
         smallfont = pygame.font.SysFont('Corbel', 100)
         img = smallfont.render('Player 1 Won', True, (0,0,0))
         imgx, imgy = img.get_size()
@@ -343,6 +348,9 @@ def main():
         for puck in PUCKS:
             if puck.onField:
                 puck.draw(SCREEN)
+                text = smallfont.render(str(puck.id) , True , (255,255,255))
+                imgx, imgy = img.get_size()
+                SCREEN.blit(text , (puck.position[0] - puck.radius/2, puck.position[1] - puck.radius/2))
             else:
                 puck.velocity = (0,0)
 
