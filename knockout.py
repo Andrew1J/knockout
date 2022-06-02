@@ -281,6 +281,7 @@ def main():
                             pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT]) # Draw Island
                             for arrow in ARROWS:
                                 pygame.draw.line(SCREEN, (0,0,0), puck.get_pos(), pos2)
+                            puck.hasLine = True
                         if ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
                             puck.click()
 
