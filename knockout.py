@@ -92,24 +92,37 @@ def game_end(pucks):
     if cntp1 == 0:
         SCREEN.fill((0, 0, 255))
         pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
+
         for puck in PUCKS:
             if puck.onField:
                 puck.draw(SCREEN)
+
         smallfont = pygame.font.SysFont('Corbel', 100)
         img = smallfont.render('Player 2 Won', True, (0,0,0))
         imgx, imgy = img.get_size()
         SCREEN.blit(img, (SCREEN_WIDTH/2 - imgx/2, SCREEN_HEIGHT/2 - imgy/2))
+
+        smallfont = pygame.font.SysFont('Corbel', 30)
+        img = smallfont.render('Press R to Restart', True, (255,0,0))
+        SCREEN.blit(img, (SCREEN_WIDTH/2 - imgx/2, SCREEN_HEIGHT/2 + imgy/2))
+
         return True
     if cntp2 == 0:
         SCREEN.fill((0, 0, 255))
         pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
+        
         for puck in PUCKS:
             if puck.onField:
                 puck.draw(SCREEN)
+
         smallfont = pygame.font.SysFont('Corbel', 100)
         img = smallfont.render('Player 1 Won', True, (0,0,0))
         imgx, imgy = img.get_size()
         SCREEN.blit(img, (SCREEN_WIDTH/2 - imgx/2, SCREEN_HEIGHT/2 - imgy/2))
+
+        smallfont = pygame.font.SysFont('Corbel', 30)
+        img = smallfont.render('Press R to Restart', True, (255,0,0))
+        SCREEN.blit(img, (SCREEN_WIDTH/2 - imgx/2, SCREEN_HEIGHT/2 + imgy/2))
         return True
     return False
 
@@ -180,6 +193,8 @@ def main():
 
     DRAW_ARROW_STATE = True
     PLAYERONETURN = True
+    global PUCKS
+    global ARROWS
 
     # Set up the level
     setup_lvl1()
@@ -218,8 +233,6 @@ def main():
             # Main Event Handling
             for event in pygame.event.get():
                 global mu
-                if (event.type == pygame.KEYDOWN and event.key == pygame.K_q) or event.type == pygame.QUIT: # Check for game quit()
-                    running = False
 
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check for mouse click
                     pos1 = pygame.mouse.get_pos()
@@ -227,7 +240,7 @@ def main():
                     clicked_sprites = [puck for puck in PUCKS if puck.col_circle(pos1)]
 
                     for puck in clicked_sprites:
-                        if not puck.hasLine and ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
+                        if ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
                             puck.click()
 
                 if event.type == pygame.MOUSEBUTTONUP: # Draw arrow
@@ -258,15 +271,26 @@ def main():
                             pygame.draw.line(SCREEN, (0,0,0), puck.get_pos(), pos2)
                             ARROWS.append((puck.get_pos(),(pos2[0]-puck.get_pos()[0], pos2[1] - puck.get_pos()[1])))
                             puck.hasLine = True
+                        if puck.hasLine and ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
+                            pos = puck.get_pos()
+                            for arrow in ARROWS:
+                                if arrow[0] == pos:
+                                    ARROWS.remove(arrow)
+                            ARROWS.append((puck.get_pos(),(pos2[0]-puck.get_pos()[0], pos2[1] - puck.get_pos()[1])))
+                            SCREEN.fill((0, 0, 255)) # Draw Water
+                            pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT]) # Draw Island
+                            for arrow in ARROWS:
+                                pygame.draw.line(SCREEN, (0,0,0), puck.get_pos(), pos2)
+                        if ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
                             puck.click()
-                        if puck.hasLine:
-                            #TODO RESET ARROW
-                            pass
 
                 if (event.type == pygame.KEYDOWN and event.key == pygame.K_a): # Check for game shoot phase #TODO REPLACE WITH BUTTON
                     DRAW_ARROW_STATE = False
                     PLAYERONETURN = True
 
+                if (event.type == pygame.KEYDOWN and event.key == pygame.K_q) or event.type == pygame.QUIT: # Check for game quit()
+                    running = False
+                    quit()
 
         else: # Check for collisions after shooting the pucks
 
@@ -366,12 +390,18 @@ def main():
         pygame.event.pump()
 
     # Game Restart
-    while True:
+    RESTART = True
+    while RESTART:
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                PUCKS = []
+                ARROWS = []
                 main()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
+                RESTART = False
+                break
 
-    # pygame.quit()
+    pygame.quit()
 
 
 if __name__ == '__main__':
