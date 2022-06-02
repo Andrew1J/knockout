@@ -99,6 +99,7 @@ def game_end(pucks):
         img = smallfont.render('Player 2 Won', True, (0,0,0))
         imgx, imgy = img.get_size()
         SCREEN.blit(img, (SCREEN_WIDTH/2 - imgx/2, SCREEN_HEIGHT/2 - imgy/2))
+        return True
     if cntp2 == 0:
         SCREEN.fill((0, 0, 255))
         pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
@@ -109,6 +110,8 @@ def game_end(pucks):
         img = smallfont.render('Player 1 Won', True, (0,0,0))
         imgx, imgy = img.get_size()
         SCREEN.blit(img, (SCREEN_WIDTH/2 - imgx/2, SCREEN_HEIGHT/2 - imgy/2))
+        return True
+    return False
 
 
 def outofbounds(coords):
@@ -354,14 +357,21 @@ def main():
 
         # Display end game screen if pucks fall off
         # TODO IMPLEMENT GAME RESTART
-        game_end(PUCKS)
+        if game_end(PUCKS):
+            running = False
 
         # Flip / Update the Display
         pygame.display.flip()
         pygame.display.update()
         pygame.event.pump()
 
-    pygame.quit()
+    # Game Restart
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                main()
+
+    # pygame.quit()
 
 
 if __name__ == '__main__':
