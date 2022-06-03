@@ -54,25 +54,25 @@ def display_buttons():
     text = smallfont.render('Elasticity: ' + str(elasticity), True , (255,255,255))
 
     # Display elasticity text
-    pygame.draw.rect(SCREEN, (100,100,100),[2 * (SCREEN_WIDTH/6), 4.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
-    SCREEN.blit(text, (2 * (SCREEN_WIDTH/6) + 100, 4.5 * (SCREEN_HEIGHT/6) + 10))
+    textx, texty = text.get_size()
+    SCREEN.blit(text, (3 * (SCREEN_WIDTH/6) - (textx/2), 4.6 * (SCREEN_HEIGHT/6) + 5))
 
     # Display elasticity buttons
     # +
     text = smallfont.render('+' , True , (255,255,255))
-    if 2 * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/2 and 4.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.5 * (SCREEN_HEIGHT/6)+40:
-        pygame.draw.rect(SCREEN, (170,170,170),[2 * (SCREEN_WIDTH/6), 4.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    if 2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.7 * (SCREEN_HEIGHT/6)+40:
+        pygame.draw.rect(SCREEN, (170,170,170),[2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
     else:
-        pygame.draw.rect(SCREEN, (100,100,100),[2 * (SCREEN_WIDTH/6), 4.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
-    SCREEN.blit(text, (2 * (SCREEN_WIDTH/6) + 30, 4.5 * (SCREEN_HEIGHT/6) + 5))
+        pygame.draw.rect(SCREEN, (100,100,100),[2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    SCREEN.blit(text, (2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 + 30, 4.6 * (SCREEN_HEIGHT/6) + 5))
 
     # -
     text = smallfont.render('-' , True , (255,255,255))
-    if 4 * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/2 and 4.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.5 * (SCREEN_HEIGHT/6)+40:
-        pygame.draw.rect(SCREEN, (170,170,170),[4 * (SCREEN_WIDTH/6), 4.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    if 4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.7 * (SCREEN_HEIGHT/6)+40:
+        pygame.draw.rect(SCREEN, (170,170,170),[4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
     else:
-        pygame.draw.rect(SCREEN, (100,100,100),[4 * (SCREEN_WIDTH/6), 4.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
-    SCREEN.blit(text, (4 * (SCREEN_WIDTH/6) + 30, 4.5 * (SCREEN_HEIGHT/6) + 5))
+        pygame.draw.rect(SCREEN, (100,100,100),[4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    SCREEN.blit(text, (4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 + 30, 4.6 * (SCREEN_HEIGHT/6) + 5))
 
     # Display field type buttons
     field_types = ['Ice', 'Steel', 'Rock', 'Wool']
@@ -275,12 +275,14 @@ def main():
                     # elasticity increase button
                     if elasticity <= 0.95 and 2 * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/2 and 4.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.5 * (SCREEN_HEIGHT/6)+40:
                         elasticity += 0.05
-                        print("mu was increased and is now " + str(mu))
+                        elasticity = round(elasticity,2)
+                        print("mu was increased and is now " + str(elasticity))
 
                     # elasticity decrease button
-                    if elasticity >= 0.05 and 4 * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/2 and 4.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.5 * (SCREEN_HEIGHT/6)+40:
+                    if elasticity > 0.05 and 4 * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/2 and 4.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.5 * (SCREEN_HEIGHT/6)+40:
                         elasticity -= 0.05
-                        print("mu was decreased and is now " + str(mu))
+                        elasticity = round(elasticity,2)
+                        print("mu was decreased and is now " + str(elasticity))
 
                     # ice button
                     if SCREEN_WIDTH/6 <= pos2[0] <= SCREEN_WIDTH/6+BUTTON_WIDTH and 5*SCREEN_HEIGHT/6 <= pos2[1] <= 5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
