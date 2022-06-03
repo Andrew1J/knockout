@@ -19,6 +19,7 @@ ARROWS = []
 GRAVITY = -9.8
 ARROW_SPEED_CONSTANT = 0.02
 mu = 0.1
+elasticity = 1
 
 
 # Set Up Levels
@@ -49,10 +50,32 @@ def setup_lvl1():
 
 
 def display_buttons():
-    field_types = ['Ice', 'Steel', 'Rock', 'Wool']
     smallfont = pygame.font.SysFont('Corbel',35)
+    text = smallfont.render('Elasticity: ' + str(elasticity), True , (255,255,255))
 
-    # Display buttons
+    # Display elasticity text
+    pygame.draw.rect(SCREEN, (100,100,100),[2 * (SCREEN_WIDTH/6), 4.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    SCREEN.blit(text, (2 * (SCREEN_WIDTH/6) + 100, 4.5 * (SCREEN_HEIGHT/6) + 10))
+
+    # Display elasticity buttons
+    # +
+    text = smallfont.render('+' , True , (255,255,255))
+    if 2 * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/2 and 4.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.5 * (SCREEN_HEIGHT/6)+40:
+        pygame.draw.rect(SCREEN, (170,170,170),[2 * (SCREEN_WIDTH/6), 4.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    else:
+        pygame.draw.rect(SCREEN, (100,100,100),[2 * (SCREEN_WIDTH/6), 4.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    SCREEN.blit(text, (2 * (SCREEN_WIDTH/6) + 30, 4.5 * (SCREEN_HEIGHT/6) + 5))
+
+    # -
+    text = smallfont.render('-' , True , (255,255,255))
+    if 4 * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/2 and 4.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.5 * (SCREEN_HEIGHT/6)+40:
+        pygame.draw.rect(SCREEN, (170,170,170),[4 * (SCREEN_WIDTH/6), 4.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    else:
+        pygame.draw.rect(SCREEN, (100,100,100),[4 * (SCREEN_WIDTH/6), 4.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    SCREEN.blit(text, (4 * (SCREEN_WIDTH/6) + 30, 4.5 * (SCREEN_HEIGHT/6) + 5))
+
+    # Display field type buttons
+    field_types = ['Ice', 'Steel', 'Rock', 'Wool']
     for i, mat in enumerate(field_types):
         text = smallfont.render(mat , True , (255,255,255))
         if i % 2 == 0:
@@ -110,7 +133,7 @@ def game_end(pucks):
     if cntp2 == 0:
         SCREEN.fill((0, 0, 255))
         pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
-        
+
         for puck in PUCKS:
             if puck.onField:
                 puck.draw(SCREEN)
@@ -176,6 +199,8 @@ def collision_response(puck1, puck2):
     m2 = puck2.mass
     x1,y1 = puck1.position
     x2,y2 = puck2.position
+    ki = 0.5 * m1 * (vx1i**2 + vy1i**2) + 0.5 * m2 * (vx2i**2 + vy2i**2)
+    # kf =
 
     const1 = ((2*m2) / (m1 + m2)) * (dot_product([vx1i-vx2i, vy1i-vy2i], [x1-x2, y1-y2])) / (magnitude_squared([x1-x2, y1-y2])+.000001)
     vx1f = vx1i - (const1 * (x1-x2))
@@ -213,8 +238,8 @@ def main():
         if DRAW_ARROW_STATE: # Drawing arrows phase
 
             # Check whose turn it is
-            drawn_p1_sprites = [puck for puck in PUCKS if (puck.player == 1 and not puck.hasLine)]
-            drawn_p2_sprites = [puck for puck in PUCKS if (puck.player == 2 and not puck.hasLine)]
+            drawn_p1_sprites = [puck for puck in PUCKS if (puck.player == 1 and not puck.hasLine and puck.onField)]
+            drawn_p2_sprites = [puck for puck in PUCKS if (puck.player == 2 and not puck.hasLine and puck.onField)]
             if len(drawn_p1_sprites) == 0:
                 PLAYERONETURN = False
             if len(drawn_p2_sprites) == 0:
@@ -245,8 +270,19 @@ def main():
 
                 if event.type == pygame.MOUSEBUTTONUP: # Draw arrow
                     pos2 = pygame.mouse.get_pos()
+                    global elasticity
 
-                    # Ice button
+                    # elasticity increase button
+                    if elasticity <= 0.95 and 2 * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/2 and 4.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.5 * (SCREEN_HEIGHT/6)+40:
+                        elasticity += 0.05
+                        print("mu was increased and is now " + str(mu))
+
+                    # elasticity decrease button
+                    if elasticity >= 0.05 and 4 * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/2 and 4.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.5 * (SCREEN_HEIGHT/6)+40:
+                        elasticity -= 0.05
+                        print("mu was decreased and is now " + str(mu))
+
+                    # ice button
                     if SCREEN_WIDTH/6 <= pos2[0] <= SCREEN_WIDTH/6+BUTTON_WIDTH and 5*SCREEN_HEIGHT/6 <= pos2[1] <= 5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
                         mu = 0.05
                         print("mu was set to " + str(mu))
