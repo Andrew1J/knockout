@@ -50,6 +50,12 @@ def setup_lvl1():
 
 
 def display_buttons():
+    # Draw Water
+    SCREEN.fill((0, 0, 255))
+
+    # Draw Island
+    pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
+
     smallfont = pygame.font.SysFont('Corbel',35)
     text = smallfont.render('Elasticity: ' + str(elasticity), True , (255,255,255))
 
@@ -256,7 +262,8 @@ def main():
                 SCREEN.blit(img, (20, 20))
 
             # Main Event Handling
-            for event in pygame.event.get():
+            event_list = pygame.event.get()
+            for event in event_list:
                 global mu
 
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check for mouse click
@@ -273,13 +280,13 @@ def main():
                     global elasticity
 
                     # elasticity increase button
-                    if elasticity <= 0.95 and 2 * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/2 and 4.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.5 * (SCREEN_HEIGHT/6)+40:
+                    if elasticity <= 0.95 and 2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.7 * (SCREEN_HEIGHT/6)+40:
                         elasticity += 0.05
                         elasticity = round(elasticity,2)
                         print("mu was increased and is now " + str(elasticity))
 
                     # elasticity decrease button
-                    if elasticity > 0.05 and 4 * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/2 and 4.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.5 * (SCREEN_HEIGHT/6)+40:
+                    if elasticity >= 0.05 and 4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.7 * (SCREEN_HEIGHT/6)+40:
                         elasticity -= 0.05
                         elasticity = round(elasticity,2)
                         print("mu was decreased and is now " + str(elasticity))
@@ -431,7 +438,7 @@ def main():
     # Game Restart
     RESTART = True
     while RESTART:
-        for event in pygame.event.get():
+        for event in event_list:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                 PUCKS = []
                 ARROWS = []
