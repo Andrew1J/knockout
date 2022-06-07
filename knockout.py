@@ -1,7 +1,9 @@
+from itertools import filterfalse
 import pygame
 import sys
 from puck import Puck
 import math
+from collisionmath import *
 import numpy as np
 pygame.init()
 clock = pygame.time.Clock()
@@ -9,11 +11,11 @@ clock = pygame.time.Clock()
 
 # Global Variables
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 800
-ISLAND_WIDTH, ISLAND_HEIGHT = 400, 400
+ISLAND_WIDTH, ISLAND_HEIGHT = 500, 500
 BUTTON_WIDTH, BUTTON_HEIGHT = 140, 40
 SCREEN = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 PUCKS = []
-PUCK_RADIUS = 10
+PUCK_RADIUS = 30
 PLAYER_ONE_TURN = True
 ARROWS = []
 GRAVITY = -9.8
@@ -30,15 +32,18 @@ def setup_lvl1():
     SCREEN.fill((0, 0, 255))
 
     # Draw Island
-    pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
+    draw_island()
 
     # Draw Pucks
-    puck1 = Puck((300, 300), (0,0),(255,0,255), 1, 1, PUCK_RADIUS, "A")
-    puck2 = Puck((300, 400), (0,0),(255,0,255), 1, 1, PUCK_RADIUS, "B")
-    puck3 = Puck((300, 500), (0,0),(255,0,255), 1, 1, PUCK_RADIUS, "C")
-    puck4 = Puck((500, 300), (0,0),(255,0,0), 1, 2, PUCK_RADIUS, "D")
-    puck5 = Puck((500, 400), (0,0),(255,0,0), 1, 2, PUCK_RADIUS, "E")
-    puck6 = Puck((500, 500), (0,0),(255,0,0), 1, 2, PUCK_RADIUS, "F")
+    offset = ISLAND_WIDTH / 4
+    startx, starty = SCREEN_WIDTH/12 + offset, SCREEN_HEIGHT/8 + offset
+
+    puck1 = Puck((startx, starty), (0,0),(255,0,255), 1, 1, PUCK_RADIUS, "A")
+    puck2 = Puck((startx, starty + offset), (0,0),(255,0,255), 1, 1, PUCK_RADIUS, "B")
+    puck3 = Puck((startx, starty + 2 * offset), (0,0),(255,0,255), 1, 1, PUCK_RADIUS, "C")
+    puck4 = Puck((startx + 2 * offset, starty), (0,0),(255,0,0), 1, 2, PUCK_RADIUS, "D")
+    puck5 = Puck((startx + 2 * offset, starty + offset), (0,0),(255,0,0), 1, 2, PUCK_RADIUS, "E")
+    puck6 = Puck((startx + 2 * offset, starty + 2*offset), (0,0),(255,0,0), 1, 2, PUCK_RADIUS, "F")
 
     # Add pucks to the list of pucks
     PUCKS.append(puck1)
@@ -48,6 +53,9 @@ def setup_lvl1():
     PUCKS.append(puck5)
     PUCKS.append(puck6)
 
+def draw_island():
+    pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/12, SCREEN_HEIGHT/8, ISLAND_WIDTH, ISLAND_HEIGHT])
+
 
 def display_buttons():
     ''' Display field and buttons to change physical variables '''
@@ -56,8 +64,8 @@ def display_buttons():
     SCREEN.fill((0, 0, 255))
 
     # Draw Island
-    pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
-
+    draw_island()
+    
     # Display shoot button
     smallfont = pygame.font.SysFont('Corbel', 25)
     text = smallfont.render('Shoot', True , (255,255,255))
@@ -130,7 +138,7 @@ def game_end(pucks):
             cntp2 += 1
     if cntp1 == 0:
         SCREEN.fill((0, 0, 255))
-        pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
+        draw_island()
 
         for puck in PUCKS:
             if puck.onField:
@@ -148,7 +156,7 @@ def game_end(pucks):
         return True
     if cntp2 == 0:
         SCREEN.fill((0, 0, 255))
-        pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
+        draw_island()
 
         for puck in PUCKS:
             if puck.onField:
@@ -171,37 +179,13 @@ def outofbounds(coords):
 
     x,y = coords
 
-    if x > (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2):
+    if x > SCREEN_WIDTH/12 + ISLAND_WIDTH or x < SCREEN_WIDTH/12:
         return True
 
-    if y > (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2):
+    if y > SCREEN_HEIGHT/8 + ISLAND_HEIGHT or y < SCREEN_HEIGHT/8:
         return True
 
     return False
-
-
-def dot_product(v1, v2):
-    '''Returns the dot product of two vectors'''
-
-    return v1[0] * v2[0] + v1[1] * v2[1]
-
-
-def magnitude_squared(v):
-    '''Returns the magnitude squared of a vector'''
-
-    return (v[0]*v[0] + v[1]*v[1])
-
-
-def subtract_vectors(v1,v2):
-    '''Subtracts two vectors'''
-
-    return (v1[0] - v2[0], v1[1] - v2[1])
-
-
-def get_angle_of_motion(v1,v2):
-    '''Returns the angle of motion between two vectors'''
-
-    return math.atan(v2/(v1+.000001))
 
 
 def collision_response(puck1, puck2):
@@ -243,7 +227,7 @@ def main():
     # MAIN GAME LOOP
     running = True
     while running:
-        clock.tick(120)
+        clock.tick(240)
 
         display_buttons()
 
@@ -275,6 +259,7 @@ def main():
             event_list = pygame.event.get()
             for event in event_list:
                 global mu
+                global elasticity
 
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check for mouse click
                     pos1 = pygame.mouse.get_pos()
@@ -287,7 +272,6 @@ def main():
 
                 if event.type == pygame.MOUSEBUTTONUP: # Draw arrow
                     pos2 = pygame.mouse.get_pos()
-                    global elasticity
 
                     # elasticity increase button
                     if elasticity <= 0.95 and 2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.7 * (SCREEN_HEIGHT/6)+40:
@@ -332,8 +316,6 @@ def main():
                                 if arrow[0] == pos:
                                     ARROWS.remove(arrow)
                             ARROWS.append((puck.get_pos(),(pos2[0]-puck.get_pos()[0], pos2[1] - puck.get_pos()[1])))
-                            SCREEN.fill((0, 0, 255)) # Draw Water
-                            pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT]) # Draw Island
                             for arrow in ARROWS:
                                 pygame.draw.line(SCREEN, (0,0,0), puck.get_pos(), pos2)
                             puck.hasLine = True
@@ -354,7 +336,7 @@ def main():
             SCREEN.fill((0, 0, 255))
 
             # Draw Island
-            pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
+            draw_island()
 
             display_buttons()
 
@@ -362,9 +344,7 @@ def main():
             for i in range(len(PUCKS)):
                 x,y = PUCKS[i].position
 
-                if x >= (SCREEN_WIDTH / 2) + (ISLAND_WIDTH / 2) or x <  (SCREEN_WIDTH / 2) - (ISLAND_WIDTH / 2):
-                    PUCKS[i].onField = False
-                if y >= (SCREEN_HEIGHT / 2) + (ISLAND_HEIGHT / 2) or y <  (SCREEN_HEIGHT / 2) - (ISLAND_HEIGHT/ 2):
+                if outofbounds((x,y)):
                     PUCKS[i].onField = False
 
             # Calculate the pucks initial velocities based on arrows
@@ -409,9 +389,6 @@ def main():
                 elif vy < 0:
                     vy -= ay * .01
                 puck.velocity = (vx,vy)
-
-                # if abs(vx) < 0.01 and abs(vy) < 0.01: #TODO FIX HOW WE HANDLE STOPPING
-                #     puck.velocity = (0,0)
                 puck.move()
 
             # Check if all pucks stopped (changing game state back)
@@ -428,7 +405,7 @@ def main():
                 puck.draw(SCREEN)
                 text = smallfont.render(str(puck.id) , True , (255,255,255))
                 imgx, imgy = img.get_size()
-                SCREEN.blit(text , (puck.position[0] - puck.radius/2, puck.position[1] - puck.radius/2))
+                SCREEN.blit(text , (puck.position[0] - puck.radius/4, puck.position[1] - puck.radius/4))
             else:
                 puck.velocity = (0,0)
 
