@@ -28,9 +28,6 @@ elasticity = 1
 def setup_lvl1():
     ''' Sets up screen for level 1'''
 
-    # Draw Water
-    SCREEN.fill((0, 0, 255))
-
     # Draw Island
     draw_island()
 
@@ -56,8 +53,20 @@ def setup_lvl1():
     PUCKS.append(puck5)
     PUCKS.append(puck6)
 
+
 def draw_island():
     pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/12, SCREEN_HEIGHT/8, ISLAND_WIDTH, ISLAND_HEIGHT])
+
+
+def draw_background():
+    # Draw Water
+    SCREEN.fill((0, 0, 255))
+
+    display_buttons()
+
+    smallfont = pygame.font.SysFont('Corbel', 24)
+    img = smallfont.render('Player 2\'s Turn', True, (255,255,255))
+    SCREEN.blit(img, (20, 20))
 
 
 def display_buttons():
@@ -259,6 +268,8 @@ def main():
 
         display_buttons()
 
+        display_background()
+
         # End game if no pucks are left
         if len(PUCKS) == 0:
             running = False
@@ -278,10 +289,14 @@ def main():
                 smallfont = pygame.font.SysFont('Corbel', 24)
                 img = smallfont.render('Player 1\'s Turn', True, (255,255,255))
                 SCREEN.blit(img, (20, 20))
+                smallfont = pygame.font.SysFont('Corbel', 24)
+                pass
             else:
                 smallfont = pygame.font.SysFont('Corbel', 24)
                 img = smallfont.render('Player 2\'s Turn', True, (255,255,255))
                 SCREEN.blit(img, (20, 20))
+                smallfont = pygame.font.SysFont('Corbel', 24)
+                pass
 
             # Main Event Handling
             event_list = pygame.event.get()
