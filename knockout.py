@@ -68,7 +68,7 @@ def display_buttons():
 
     # Draw Island
     draw_island()
-    
+
     # Display shoot button
     smallfont = pygame.font.SysFont('Corbel', 25)
     text = smallfont.render('Shoot', True , (255,255,255))
@@ -333,7 +333,7 @@ def main():
                         mu = 0.9
                         print("mu was set to " + str(mu))
 
-                    # mass increase buttons
+                    # mass buttons
                     for i in range(len(PUCKS)):
                         if PUCKS[i].mass <= 4.9 and 78 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 78 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.5) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.5) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
                             PUCKS[i].mass += 0.1
@@ -345,8 +345,6 @@ def main():
                             PUCKS[i].mass -= 0.1
                             PUCKS[i].mass = round(PUCKS[i].mass, 2)
                             print('mass for ' + str(i) + ' was decreased and is now ' + str(round(PUCKS[i].mass,2)))
-
-                    # mass decrease buttons
 
                     for puck in clicked_sprites:
                         if not puck.hasLine and ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
