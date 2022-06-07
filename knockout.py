@@ -50,23 +50,34 @@ def setup_lvl1():
 
 
 def display_buttons():
+    ''' Display field and buttons to change physical variables '''
+
     # Draw Water
     SCREEN.fill((0, 0, 255))
 
     # Draw Island
     pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/2 - ISLAND_WIDTH/2, SCREEN_HEIGHT/2 - ISLAND_HEIGHT/2, ISLAND_WIDTH, ISLAND_HEIGHT])
 
-    smallfont = pygame.font.SysFont('Corbel',35)
-    text = smallfont.render('Elasticity: ' + str(elasticity), True , (255,255,255))
+    # Display shoot button
+    smallfont = pygame.font.SysFont('Corbel', 25)
+    text = smallfont.render('Shoot', True , (255,255,255))
+    textx, texty = text.get_size()
+    if (SCREEN_WIDTH/6) - BUTTON_WIDTH/2 <= pygame.mouse.get_pos()[0] <= (SCREEN_WIDTH/6) and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.6 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
+        pygame.draw.rect(SCREEN, (170,170,170),[(SCREEN_WIDTH/6) - BUTTON_WIDTH/2, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    else:
+        pygame.draw.rect(SCREEN, (255,0,0),[(SCREEN_WIDTH/6) - BUTTON_WIDTH/2, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    SCREEN.blit(text, ((SCREEN_WIDTH/6) - BUTTON_WIDTH/4 - (textx/2), 4.6 * (SCREEN_HEIGHT/6) + 10))
 
     # Display elasticity text
+    smallfont = pygame.font.SysFont('Corbel', 35)
+    text = smallfont.render('Elasticity: ' + str(elasticity), True , (255,255,255))
     textx, texty = text.get_size()
     SCREEN.blit(text, (3 * (SCREEN_WIDTH/6) - (textx/2), 4.6 * (SCREEN_HEIGHT/6) + 5))
 
     # Display elasticity buttons
     # +
     text = smallfont.render('+' , True , (255,255,255))
-    if 2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.7 * (SCREEN_HEIGHT/6)+40:
+    if 2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.6 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
         pygame.draw.rect(SCREEN, (170,170,170),[2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
     else:
         pygame.draw.rect(SCREEN, (100,100,100),[2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
@@ -74,7 +85,7 @@ def display_buttons():
 
     # -
     text = smallfont.render('-' , True , (255,255,255))
-    if 4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.7 * (SCREEN_HEIGHT/6)+40:
+    if 4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.6 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
         pygame.draw.rect(SCREEN, (170,170,170),[4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
     else:
         pygame.draw.rect(SCREEN, (100,100,100),[4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
@@ -85,20 +96,20 @@ def display_buttons():
     for i, mat in enumerate(field_types):
         text = smallfont.render(mat , True , (255,255,255))
         if i % 2 == 0:
-            if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5 * (SCREEN_HEIGHT/6)+40:
+            if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
                 pygame.draw.rect(SCREEN, (170,170,170),[(i+1) * (SCREEN_WIDTH/6),5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
             else:
                 pygame.draw.rect(SCREEN, (100,100,100),[(i+1) * (SCREEN_WIDTH/6),5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
             SCREEN.blit(text, ((i+1) * (SCREEN_WIDTH/6) + 40, 5 * (SCREEN_HEIGHT/6) + 5))
         else:
-            if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5 * (SCREEN_HEIGHT/6)+40:
+            if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
                 pygame.draw.rect(SCREEN, (170,170,170),[(i+1) * (SCREEN_WIDTH/6),5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
             else:
                 pygame.draw.rect(SCREEN, (50,50,50),[(i+1) * (SCREEN_WIDTH/6),5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
             SCREEN.blit(text, ((i+1) * (SCREEN_WIDTH/6) + 40, 5 * (SCREEN_HEIGHT/6) + 5))
 
 def display_information(pucks):
-    ''' Displays the velocities after each collision in the side bar '''
+    ''' Displays the live velocities of each puck in the side bar '''
 
     smallfont = pygame.font.SysFont('Corbel',20)
     for i in range(len(pucks)):
@@ -106,8 +117,7 @@ def display_information(pucks):
             text = smallfont.render("PUCK " + str(pucks[i].id) + " Velocity: "+ str(round(pucks[i].velocity[0], 2)) + ", " + str(round(pucks[i].velocity[1], 2)) , True , (255,255,255))
         else:
             text = smallfont.render("PUCK " + str(pucks[i].id) + " Velocity: "+ str(round(pucks[i].velocity[0], 2)) + ", " + str(round(pucks[i].velocity[1], 2)) , True , (255,0,0))
-        SCREEN.blit(text , (72*SCREEN_WIDTH/100 + 50, (i+1) * (SCREEN_HEIGHT/9)))
-
+        SCREEN.blit(text, (72*SCREEN_WIDTH/100 + 50, (i+1) * (SCREEN_HEIGHT/9)))
 
 def game_end(pucks):
     ''' Renders game end screen if game is over '''
@@ -195,7 +205,7 @@ def get_angle_of_motion(v1,v2):
 
 
 def collision_response(puck1, puck2):
-    '''Calculates the final velocities between two pucks after they collide'''
+    '''Calculates the final velocities of two colliding pucks '''
 
     vx1i = puck1.velocity[0]
     vy1i = puck1.velocity[1]
@@ -206,7 +216,7 @@ def collision_response(puck1, puck2):
     x1,y1 = puck1.position
     x2,y2 = puck2.position
     ki = 0.5 * m1 * (vx1i**2 + vy1i**2) + 0.5 * m2 * (vx2i**2 + vy2i**2)
-    # kf =
+    kf = elasticity * ki
 
     const1 = ((2*m2) / (m1 + m2)) * (dot_product([vx1i-vx2i, vy1i-vy2i], [x1-x2, y1-y2])) / (magnitude_squared([x1-x2, y1-y2])+.000001)
     vx1f = vx1i - (const1 * (x1-x2))
@@ -283,13 +293,13 @@ def main():
                     if elasticity <= 0.95 and 2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.7 * (SCREEN_HEIGHT/6)+40:
                         elasticity += 0.05
                         elasticity = round(elasticity,2)
-                        print("mu was increased and is now " + str(elasticity))
+                        print("elasticity const was increased and is now " + str(elasticity))
 
                     # elasticity decrease button
                     if elasticity >= 0.05 and 4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.7 * (SCREEN_HEIGHT/6)+40:
                         elasticity -= 0.05
                         elasticity = round(elasticity,2)
-                        print("mu was decreased and is now " + str(elasticity))
+                        print("elasticity const was decreased and is now " + str(elasticity))
 
                     # ice button
                     if SCREEN_WIDTH/6 <= pos2[0] <= SCREEN_WIDTH/6+BUTTON_WIDTH and 5*SCREEN_HEIGHT/6 <= pos2[1] <= 5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
@@ -330,9 +340,9 @@ def main():
                         if ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
                             puck.click()
 
-                if (event.type == pygame.KEYDOWN and event.key == pygame.K_a): # Check for game shoot phase #TODO REPLACE WITH BUTTON
-                    DRAW_ARROW_STATE = False
-                    PLAYERONETURN = True
+                    if (SCREEN_WIDTH/6) - BUTTON_WIDTH/2 <= pygame.mouse.get_pos()[0] <= (SCREEN_WIDTH/6) and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.6 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT: # Check for game shoot phase
+                        DRAW_ARROW_STATE = False
+                        PLAYERONETURN = True
 
                 if (event.type == pygame.KEYDOWN and event.key == pygame.K_q) or event.type == pygame.QUIT: # Check for game quit()
                     running = False
