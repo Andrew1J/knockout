@@ -30,7 +30,7 @@ class Puck(pygame.sprite.Sprite):
         self.color = color
 
     def move(self):
-        ''' Calculate the velocities and stuff '''
+        ''' Calculate the velocities and apply them frame by frame '''
         x,y = self.position
         vx,vy = self.velocity
         x += vx

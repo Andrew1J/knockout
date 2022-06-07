@@ -17,7 +17,7 @@ PUCK_RADIUS = 10
 PLAYER_ONE_TURN = True
 ARROWS = []
 GRAVITY = -9.8
-ARROW_SPEED_CONSTANT = 0.02
+ARROW_SPEED_CONSTANT = 0.015
 mu = 0.1
 elasticity = 1
 
@@ -39,6 +39,9 @@ def setup_lvl1():
     puck4 = Puck((500, 300), (0,0),(255,0,0), 1, 2, PUCK_RADIUS, "D")
     puck5 = Puck((500, 400), (0,0),(255,0,0), 1, 2, PUCK_RADIUS, "E")
     puck6 = Puck((500, 500), (0,0),(255,0,0), 1, 2, PUCK_RADIUS, "F")
+
+    # PUCKS[i].radius = ((PUCKS[i].mass)**0.5 * PUCKS[i].radius)
+    # PUCKS[i].radius = round((PUCKS[i].mass)**0.5 * PUCKS[i].radius, 2)
 
     # Add pucks to the list of pucks
     PUCKS.append(puck1)
@@ -111,13 +114,38 @@ def display_buttons():
 def display_information(pucks):
     ''' Displays the live velocities of each puck in the side bar '''
 
+    #TODO Incorporate mass component and have the radius of the puck change accordingly
+    # Copy elasticity button structure
+    # Update puck.mass
+    # Update puck.radius based on formula (pir^2h but h is set to be 1 and density is uniform so increasing mass by a factor of 2 will increase radius by a factor of sq2)
+
     smallfont = pygame.font.SysFont('Corbel',20)
     for i in range(len(pucks)):
         if pucks[i].onField:
             text = smallfont.render("PUCK " + str(pucks[i].id) + " Velocity: "+ str(round(pucks[i].velocity[0], 2)) + ", " + str(round(pucks[i].velocity[1], 2)) , True , (255,255,255))
         else:
             text = smallfont.render("PUCK " + str(pucks[i].id) + " Velocity: "+ str(round(pucks[i].velocity[0], 2)) + ", " + str(round(pucks[i].velocity[1], 2)) , True , (255,0,0))
-        SCREEN.blit(text, (72*SCREEN_WIDTH/100 + 50, (i+1) * (SCREEN_HEIGHT/9)))
+        SCREEN.blit(text, (72 * SCREEN_WIDTH/100 + 50, (i+1) * (SCREEN_HEIGHT/9)))
+
+        # Display mass text
+        text = smallfont.render('Mass: ' + str(PUCKS[i].mass), True , (255,255,255))
+        textx, texty = text.get_size()
+        SCREEN.blit(text, (84 * SCREEN_WIDTH/100 + 20 - (textx/2), (i+1.5) * (SCREEN_HEIGHT/9) + 5))
+
+        # Display increase and decrease buttons
+        text = smallfont.render('+' , True , (255,255,255))
+        if 78 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 78 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.5) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.5) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
+            pygame.draw.rect(SCREEN, (170,170,170),[78 * SCREEN_WIDTH/100, (i+1.5) * (SCREEN_HEIGHT/9), BUTTON_WIDTH/4, BUTTON_HEIGHT/2])
+        else:
+            pygame.draw.rect(SCREEN, (100,100,100),[78 * SCREEN_WIDTH/100, (i+1.5) * (SCREEN_HEIGHT/9), BUTTON_WIDTH/4, BUTTON_HEIGHT/2])
+        SCREEN.blit(text, (82 * SCREEN_WIDTH/100 - BUTTON_WIDTH/8, (i+1.5) * (SCREEN_HEIGHT/9)))
+
+        text = smallfont.render('-' , True , (255,255,255))
+        if 90 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 90 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.5) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.5) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
+            pygame.draw.rect(SCREEN, (170,170,170),[90 * SCREEN_WIDTH/100, (i+1.5) * (SCREEN_HEIGHT/9), BUTTON_WIDTH/4, BUTTON_HEIGHT/2])
+        else:
+            pygame.draw.rect(SCREEN, (100,100,100),[90 * SCREEN_WIDTH/100, (i+1.5) * (SCREEN_HEIGHT/9), BUTTON_WIDTH/4, BUTTON_HEIGHT/2])
+        SCREEN.blit(text, (94 * SCREEN_WIDTH/100 - BUTTON_WIDTH/8, (i+1.5) * (SCREEN_HEIGHT/9)))
 
 def game_end(pucks):
     ''' Renders game end screen if game is over '''
@@ -320,6 +348,21 @@ def main():
                     if 4*SCREEN_WIDTH/6 <= pos2[0] <= 4*SCREEN_WIDTH/6+BUTTON_WIDTH and 5*SCREEN_HEIGHT/6 <= pos2[1] <= 5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
                         mu = 0.9
                         print("mu was set to " + str(mu))
+
+                    # mass increase buttons
+                    for i in range(len(PUCKS)):
+                        if PUCKS[i].mass <= 4.9 and 78 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 78 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.5) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.5) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
+                            PUCKS[i].mass += 0.1
+                            PUCKS[i].mass = round(PUCKS[i].mass, 2)
+
+                            print('mass for ' + str(i) + ' was increased and is now ' + str(round(PUCKS[i].mass,2)))
+
+                        if PUCKS[i].mass >= 0.2 and 90 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 90 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.5) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.5) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
+                            PUCKS[i].mass -= 0.1
+                            PUCKS[i].mass = round(PUCKS[i].mass, 2)
+                            print('mass for ' + str(i) + ' was decreased and is now ' + str(round(PUCKS[i].mass,2)))
+
+                    # mass decrease buttons
 
                     for puck in clicked_sprites:
                         if not puck.hasLine and ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
