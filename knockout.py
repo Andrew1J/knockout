@@ -1,3 +1,4 @@
+from colorsys import yiq_to_rgb
 from itertools import filterfalse
 import pygame
 import sys
@@ -5,6 +6,7 @@ from puck import Puck
 import math
 from collisionmath import *
 import numpy as np
+import button
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -19,8 +21,8 @@ PUCK_RADIUS = 30
 PLAYER_ONE_TURN = True
 ARROWS = []
 GRAVITY = -9.8
-ARROW_SPEED_CONSTANT = 0.015
-mu = 0.1
+ARROW_SPEED_CONSTANT = 0.025
+mu = 0.3
 elasticity = 1
 
 
@@ -28,13 +30,15 @@ elasticity = 1
 def setup_lvl1():
     ''' Sets up screen for level 1'''
 
+    # Draw Background
+    draw_background()
+
     # Draw Island
     draw_island()
 
     # Draw Pucks
     offset = ISLAND_WIDTH / 4
     startx, starty = SCREEN_WIDTH/12 + offset, SCREEN_HEIGHT/8 + offset
-
     puck1 = Puck((startx, starty), (0,0),(255,0,255), 1, 1, PUCK_RADIUS, "A")
     puck2 = Puck((startx, starty + offset), (0,0),(255,0,255), 1, 1, PUCK_RADIUS, "B")
     puck3 = Puck((startx, starty + 2 * offset), (0,0),(255,0,255), 1, 1, PUCK_RADIUS, "C")
@@ -62,76 +66,20 @@ def draw_background():
     # Draw Water
     SCREEN.fill((0, 0, 255))
 
+    # Draw Buttons
     display_buttons()
 
-    smallfont = pygame.font.SysFont('Corbel', 24)
-    img = smallfont.render('Player 2\'s Turn', True, (255,255,255))
-    SCREEN.blit(img, (20, 20))
+    # Draw LOGO
+    smallfont = pygame.font.SysFont('Corbel', 60)
+    img = smallfont.render('KNOCKOUT', True, (255,255,255))
+    textx, texty = img.get_size()
+    SCREEN.blit(img, (SCREEN_WIDTH/12, SCREEN_HEIGHT/16 - texty/2))
 
-
-def display_buttons():
-    ''' Display field and buttons to change physical variables '''
-
-    # Draw Water
-    SCREEN.fill((0, 0, 255))
-
-    # Draw Island
-    draw_island()
-
-    # Display shoot button
-    smallfont = pygame.font.SysFont('Corbel', 25)
-    text = smallfont.render('Shoot', True , (255,255,255))
-    textx, texty = text.get_size()
-    if (SCREEN_WIDTH/6) - BUTTON_WIDTH/2 <= pygame.mouse.get_pos()[0] <= (SCREEN_WIDTH/6) and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.6 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
-        pygame.draw.rect(SCREEN, (170,170,170),[(SCREEN_WIDTH/6) - BUTTON_WIDTH/2, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
-    else:
-        pygame.draw.rect(SCREEN, (255,0,0),[(SCREEN_WIDTH/6) - BUTTON_WIDTH/2, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
-    SCREEN.blit(text, ((SCREEN_WIDTH/6) - BUTTON_WIDTH/4 - (textx/2), 4.6 * (SCREEN_HEIGHT/6) + 10))
-
-    # Display elasticity text
-    smallfont = pygame.font.SysFont('Corbel', 35)
-    text = smallfont.render('Elasticity: ' + str(elasticity), True , (255,255,255))
-    textx, texty = text.get_size()
-    SCREEN.blit(text, (3 * (SCREEN_WIDTH/6) - (textx/2), 4.6 * (SCREEN_HEIGHT/6) + 5))
-
-    # Display elasticity buttons
-    # +
-    text = smallfont.render('+' , True , (255,255,255))
-    if 2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.6 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
-        pygame.draw.rect(SCREEN, (170,170,170),[2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
-    else:
-        pygame.draw.rect(SCREEN, (100,100,100),[2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
-    SCREEN.blit(text, (2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 + 30, 4.6 * (SCREEN_HEIGHT/6) + 5))
-
-    # -
-    text = smallfont.render('-' , True , (255,255,255))
-    if 4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.6 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
-        pygame.draw.rect(SCREEN, (170,170,170),[4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
-    else:
-        pygame.draw.rect(SCREEN, (100,100,100),[4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
-    SCREEN.blit(text, (4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 + 30, 4.6 * (SCREEN_HEIGHT/6) + 5))
-
-    # Display field type buttons
-    field_types = ['Ice', 'Steel', 'Rock', 'Wool']
-    for i, mat in enumerate(field_types):
-        text = smallfont.render(mat , True , (255,255,255))
-        if i % 2 == 0:
-            if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
-                pygame.draw.rect(SCREEN, (170,170,170),[(i+1) * (SCREEN_WIDTH/6),5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
-            else:
-                pygame.draw.rect(SCREEN, (100,100,100),[(i+1) * (SCREEN_WIDTH/6),5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
-            SCREEN.blit(text, ((i+1) * (SCREEN_WIDTH/6) + 40, 5 * (SCREEN_HEIGHT/6) + 5))
-        else:
-            if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
-                pygame.draw.rect(SCREEN, (170,170,170),[(i+1) * (SCREEN_WIDTH/6),5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
-            else:
-                pygame.draw.rect(SCREEN, (50,50,50),[(i+1) * (SCREEN_WIDTH/6),5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
-            SCREEN.blit(text, ((i+1) * (SCREEN_WIDTH/6) + 40, 5 * (SCREEN_HEIGHT/6) + 5))
 
 def display_information(pucks):
     ''' Displays the live velocities of each puck in the side bar '''
 
-    #TODO Incorporate mass component and have the radius of the puck change accordingly
+    # TODO Incorporate mass component and have the radius of the puck change accordingly
     # Copy elasticity button structure
     # Update puck.mass
     # Update puck.radius based on formula (pir^2h but h is set to be 1 and density is uniform so increasing mass by a factor of 2 will increase radius by a factor of sq2)
@@ -139,9 +87,9 @@ def display_information(pucks):
     smallfont = pygame.font.SysFont('Corbel',20)
     for i in range(len(pucks)):
         if pucks[i].onField:
-            text = smallfont.render("PUCK " + str(pucks[i].id) + " Velocity: "+ str(round(pucks[i].velocity[0], 2)) + ", " + str(round(pucks[i].velocity[1], 2)) , True , (255,255,255))
+            text = smallfont.render("PUCK " + str(pucks[i].id) + " Velocity: "+ str(round(pucks[i].velocity[0], 2)) + ", " + str(round(-1*pucks[i].velocity[1], 2)) , True , (255,255,255))
         else:
-            text = smallfont.render("PUCK " + str(pucks[i].id) + " Velocity: "+ str(round(pucks[i].velocity[0], 2)) + ", " + str(round(pucks[i].velocity[1], 2)) , True , (255,0,0))
+            text = smallfont.render("PUCK " + str(pucks[i].id) + " Velocity: "+ str(round(pucks[i].velocity[0], 2)) + ", " + str(round(-1*pucks[i].velocity[1], 2)) , True , (255,0,0))
         SCREEN.blit(text, (72 * SCREEN_WIDTH/100 + 50, (i+1) * (SCREEN_HEIGHT/9)))
 
         # Display mass text
@@ -250,6 +198,50 @@ def collision_response(puck1, puck2):
     return [vx1f, vy1f], [vx2f, vy2f]
 
 
+def display_buttons():
+    ''' Display field and buttons to change physical variables '''
+    
+    # Display elasticity text
+    smallfont = pygame.font.SysFont('Corbel', 35)
+    text = smallfont.render('Elasticity: ' + str(elasticity), True , (255,255,255))
+    textx, texty = text.get_size()
+    SCREEN.blit(text, (3 * (SCREEN_WIDTH/6) - (textx/2), 4.6 * (SCREEN_HEIGHT/6) + 5))
+
+    # Display elasticity buttons
+    # +
+    text = smallfont.render('+' , True , (255,255,255))
+    if 2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.6 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
+        pygame.draw.rect(SCREEN, (170,170,170),[2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    else:
+        pygame.draw.rect(SCREEN, (100,100,100),[2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    SCREEN.blit(text, (2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 + 30, 4.6 * (SCREEN_HEIGHT/6) + 5))
+
+    # -
+    text = smallfont.render('-' , True , (255,255,255))
+    if 4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.6 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
+        pygame.draw.rect(SCREEN, (170,170,170),[4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    else:
+        pygame.draw.rect(SCREEN, (100,100,100),[4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4, 4.6 * (SCREEN_HEIGHT/6), BUTTON_WIDTH/2, BUTTON_HEIGHT])
+    SCREEN.blit(text, (4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 + 30, 4.6 * (SCREEN_HEIGHT/6) + 5))
+
+    # Display field type buttons
+    field_types = ['Ice', 'Steel', 'Rock', 'Wool']
+    for i, mat in enumerate(field_types):
+        text = smallfont.render(mat , True , (255,255,255))
+        if i % 2 == 0:
+            if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
+                pygame.draw.rect(SCREEN, (170,170,170),[(i+1) * (SCREEN_WIDTH/6),5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
+            else:
+                pygame.draw.rect(SCREEN, (100,100,100),[(i+1) * (SCREEN_WIDTH/6),5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
+            SCREEN.blit(text, ((i+1) * (SCREEN_WIDTH/6) + 40, 5 * (SCREEN_HEIGHT/6) + 5))
+        else:
+            if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
+                pygame.draw.rect(SCREEN, (170,170,170),[(i+1) * (SCREEN_WIDTH/6),5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
+            else:
+                pygame.draw.rect(SCREEN, (50,50,50),[(i+1) * (SCREEN_WIDTH/6),5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
+            SCREEN.blit(text, ((i+1) * (SCREEN_WIDTH/6) + 40, 5 * (SCREEN_HEIGHT/6) + 5))
+
+
 def main():
     ''' Main Function'''
 
@@ -260,15 +252,12 @@ def main():
 
     # Set up the level
     setup_lvl1()
+    display_information(PUCKS)
 
     # MAIN GAME LOOP
     running = True
     while running:
-        clock.tick(240)
-
-        display_buttons()
-
-        display_background()
+        clock.tick(30)
 
         # End game if no pucks are left
         if len(PUCKS) == 0:
@@ -285,24 +274,25 @@ def main():
                 PLAYERONETURN = True
 
             # Draw whose turn it is on the screen
-            if PLAYERONETURN:
-                smallfont = pygame.font.SysFont('Corbel', 24)
-                img = smallfont.render('Player 1\'s Turn', True, (255,255,255))
-                SCREEN.blit(img, (20, 20))
-                smallfont = pygame.font.SysFont('Corbel', 24)
-                pass
-            else:
-                smallfont = pygame.font.SysFont('Corbel', 24)
-                img = smallfont.render('Player 2\'s Turn', True, (255,255,255))
-                SCREEN.blit(img, (20, 20))
-                smallfont = pygame.font.SysFont('Corbel', 24)
-                pass
+            # if PLAYERONETURN:
+            #     smallfont = pygame.font.SysFont('Corbel', 24)
+            #     img = smallfont.render('Player 1\'s Turn', True, (255,255,255))
+            #     SCREEN.blit(img, (SCREEN_WIDTH-20, SCREEN_HEIGHT-20))
+            # else:
+            #     smallfont = pygame.font.SysFont('Corbel', 24)
+            #     img = smallfont.render('Player 2\'s Turn', True, (255,255,255))
+            #     SCREEN.blit(img, (SCREEN_WIDTH-20, SCREEN_HEIGHT-20))
 
             # Main Event Handling
-            event_list = pygame.event.get()
-            for event in event_list:
+            for event in pygame.event.get():
                 global mu
                 global elasticity
+
+                smallfont = pygame.font.SysFont('Corbel', 25)
+                text = smallfont.render('Shoot', True , (255,255,255))
+                mybutton = button.Button(SCREEN,23*SCREEN_WIDTH/24 - BUTTON_WIDTH / 2, SCREEN_HEIGHT/16,BUTTON_WIDTH,BUTTON_HEIGHT,(255,0,0),(128,0,0),"Shoot",(0,0,0),smallfont)
+                x,y = pygame.mouse.get_pos()
+                mybutton.draw(x,y)
 
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check for mouse click
                     pos1 = pygame.mouse.get_pos()
@@ -315,6 +305,7 @@ def main():
 
                 if event.type == pygame.MOUSEBUTTONUP: # Draw arrow
                     pos2 = pygame.mouse.get_pos()
+                    x,y = (pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1])
 
                     # elasticity increase button
                     if elasticity <= 0.95 and 2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.7 * (SCREEN_HEIGHT/6)+40:
@@ -330,17 +321,17 @@ def main():
 
                     # ice button
                     if SCREEN_WIDTH/6 <= pos2[0] <= SCREEN_WIDTH/6+BUTTON_WIDTH and 5*SCREEN_HEIGHT/6 <= pos2[1] <= 5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
-                        mu = 0.05
+                        mu = 0.3
                         print("mu was set to " + str(mu))
 
                     # steel button
                     if 2*SCREEN_WIDTH/6 <= pos2[0] <= 2*SCREEN_WIDTH/6+BUTTON_WIDTH and 5*SCREEN_HEIGHT/6 <= pos2[1] <= 5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
-                        mu = 0.1
+                        mu = 0.4
                         print("mu was set to " + str(mu))
 
                     # rock button
                     if 3*SCREEN_WIDTH/6 <= pos2[0] <= 3*SCREEN_WIDTH/6+BUTTON_WIDTH and 5*SCREEN_HEIGHT/6 <= pos2[1] <= 5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
-                        mu = 0.2
+                        mu = 0.5
                         print("mu was set to " + str(mu))
 
                     # wool button
@@ -353,7 +344,6 @@ def main():
                         if PUCKS[i].mass <= 4.9 and 78 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 78 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.5) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.5) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
                             PUCKS[i].mass += 0.1
                             PUCKS[i].mass = round(PUCKS[i].mass, 2)
-
                             print('mass for ' + str(i) + ' was increased and is now ' + str(round(PUCKS[i].mass,2)))
 
                         if PUCKS[i].mass >= 0.2 and 90 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 90 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.5) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.5) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
@@ -378,23 +368,19 @@ def main():
                         if ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
                             puck.click()
 
-                    if (SCREEN_WIDTH/6) - BUTTON_WIDTH/2 <= pygame.mouse.get_pos()[0] <= (SCREEN_WIDTH/6) and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.6 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT: # Check for game shoot phase
+                    if 23*SCREEN_WIDTH/24 - BUTTON_WIDTH <= x <= 23*SCREEN_WIDTH/24 and SCREEN_HEIGHT/16 - BUTTON_HEIGHT/2 <= y <= SCREEN_HEIGHT/16 + BUTTON_HEIGHT/2: 
                         DRAW_ARROW_STATE = False
                         PLAYERONETURN = True
+
+                    # if (SCREEN_WIDTH/6) - BUTTON_WIDTH/2 <= pygame.mouse.get_pos()[0] <= (SCREEN_WIDTH/6) and 4.6 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.6 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT: # Check for game shoot phase
+                    #     DRAW_ARROW_STATE = False
+                    #     PLAYERONETURN = True
 
                 if (event.type == pygame.KEYDOWN and event.key == pygame.K_q) or event.type == pygame.QUIT: # Check for game quit()
                     running = False
                     quit()
 
         else: # Check for collisions after shooting the pucks
-
-            # Draw Water
-            SCREEN.fill((0, 0, 255))
-
-            # Draw Island
-            draw_island()
-
-            display_buttons()
 
             # TODO: Puck gets removed if its out of bounds
             for i in range(len(PUCKS)):
@@ -447,6 +433,10 @@ def main():
                 puck.velocity = (vx,vy)
                 puck.move()
 
+            draw_background()
+            draw_island()
+            display_information(PUCKS)
+
             # Check if all pucks stopped (changing game state back)
             STOPPED = True
             for i in range(len(PUCKS)):
@@ -456,17 +446,15 @@ def main():
                 DRAW_ARROW_STATE = not DRAW_ARROW_STATE
 
         # Draw Pucks To Screen
+        smallfont = pygame.font.SysFont('Corbel', 24)
         for puck in PUCKS:
             if puck.onField:
                 puck.draw(SCREEN)
-                text = smallfont.render(str(puck.id) , True , (255,255,255))
+                img = smallfont.render(str(puck.id) , True , (255,255,255))
                 imgx, imgy = img.get_size()
-                SCREEN.blit(text , (puck.position[0] - puck.radius/4, puck.position[1] - puck.radius/4))
+                SCREEN.blit(img , (puck.position[0] - puck.radius/4, puck.position[1] - puck.radius/4))
             else:
                 puck.velocity = (0,0)
-
-        # Display information
-        display_information(PUCKS)
 
         # Display end game screen if pucks fall off
         # TODO IMPLEMENT GAME RESTART
