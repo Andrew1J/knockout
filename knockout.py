@@ -274,14 +274,14 @@ def main():
                 PLAYERONETURN = True
 
             # Draw whose turn it is on the screen
-            # if PLAYERONETURN:
-            #     smallfont = pygame.font.SysFont('Corbel', 24)
-            #     img = smallfont.render('Player 1\'s Turn', True, (255,255,255))
-            #     SCREEN.blit(img, (SCREEN_WIDTH-20, SCREEN_HEIGHT-20))
-            # else:
-            #     smallfont = pygame.font.SysFont('Corbel', 24)
-            #     img = smallfont.render('Player 2\'s Turn', True, (255,255,255))
-            #     SCREEN.blit(img, (SCREEN_WIDTH-20, SCREEN_HEIGHT-20))
+            if PLAYERONETURN:
+                smallfont = pygame.font.SysFont('Corbel', 24)
+                img = smallfont.render('Player 1\'s Turn', True, (255,255,255))
+                SCREEN.blit(img, (SCREEN_WIDTH-200, SCREEN_HEIGHT-100))
+            else:
+                smallfont = pygame.font.SysFont('Corbel', 24)
+                img = smallfont.render('Player 2\'s Turn', True, (255,255,255))
+                SCREEN.blit(img, (SCREEN_WIDTH-200, SCREEN_HEIGHT-100))
 
             # Main Event Handling
             for event in pygame.event.get():
