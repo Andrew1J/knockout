@@ -262,7 +262,7 @@ def main():
         # End game if no pucks are left
         if len(PUCKS) == 0:
             running = False
-
+        
         if DRAW_ARROW_STATE: # Drawing arrows phase
 
             # Check whose turn it is
@@ -273,15 +273,25 @@ def main():
             if len(drawn_p2_sprites) == 0:
                 PLAYERONETURN = True
 
+            if len(ARROWS) == len(PUCKS):
+                PLAYERONETURN = False
+
             # Draw whose turn it is on the screen
-            if PLAYERONETURN:
+            if PLAYERONETURN and len(ARROWS) != len(PUCKS):
                 smallfont = pygame.font.SysFont('Corbel', 24)
-                img = smallfont.render('Player 1\'s Turn', True, (255,255,255))
-                SCREEN.blit(img, (SCREEN_WIDTH-200, SCREEN_HEIGHT-100))
+                img = smallfont.render('Player 1\'s Turn', True, (255,0,0))
+                imgx, imgy = img.get_size()
+                SCREEN.blit(img, (SCREEN_WIDTH/12 + ISLAND_WIDTH - imgx, SCREEN_HEIGHT/16 - imgy/2))
+            elif not PLAYERONETURN and len(ARROWS) != len(PUCKS):
+                smallfont = pygame.font.SysFont('Corbel', 24)
+                img = smallfont.render('Player 2\'s Turn', True, (255,0,0))
+                imgx, imgy = img.get_size()
+                SCREEN.blit(img, (SCREEN_WIDTH/12 + ISLAND_WIDTH - imgx, SCREEN_HEIGHT/16 - imgy/2))
             else:
                 smallfont = pygame.font.SysFont('Corbel', 24)
-                img = smallfont.render('Player 2\'s Turn', True, (255,255,255))
-                SCREEN.blit(img, (SCREEN_WIDTH-200, SCREEN_HEIGHT-100))
+                img = smallfont.render('Press the Shoot Button!', True, (255,0,0))
+                imgx, imgy = img.get_size()
+                SCREEN.blit(img, (SCREEN_WIDTH/12 + ISLAND_WIDTH - imgx, SCREEN_HEIGHT/16 - imgy/2))
 
             # Main Event Handling
             for event in pygame.event.get():
@@ -387,11 +397,12 @@ def main():
         else: # Check for collisions after shooting the pucks
 
             # TODO: Puck gets removed if its out of bounds
-            for i in range(len(PUCKS)):
-                x,y = PUCKS[i].position
+            puckscopy = PUCKS.copy()
+            for i in range(len(puckscopy)):
+                x,y = puckscopy[i].position
 
                 if outofbounds((x,y)):
-                    PUCKS[i].onField = False
+                    PUCKS.remove(PUCKS[i])
 
             # Calculate the pucks initial velocities based on arrows
             for i in range(len(PUCKS)):
@@ -399,6 +410,8 @@ def main():
                     if PUCKS[i].position == arrow[0]:
                         PUCKS[i].velocity = (arrow[1][0] * ARROW_SPEED_CONSTANT, arrow[1][1] * ARROW_SPEED_CONSTANT)
                 PUCKS[i].hasLine = False
+            
+            ARROWS = []
 
             # Check for collisions
             for i in range(len(PUCKS)):
