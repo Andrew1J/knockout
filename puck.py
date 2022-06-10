@@ -44,18 +44,31 @@ class Puck(pygame.sprite.Sprite):
     def draw(self, surface):
         ''' Draw puck to the surface '''
         if self.isClicked:
-            pygame.draw.circle(surface, (0,0,0), (self.position[0], self.position[1]), PUCK_RADIUS)
+            pygame.draw.circle(surface, (0,0,0), (self.position[0], self.position[1]), round(self.mass**0.5 * PUCK_RADIUS, 2))
+            self.radius = self.mass**0.5 * PUCK_RADIUS
         else:
-            pygame.draw.circle(surface, self.color, (self.position[0], self.position[1]), PUCK_RADIUS)
+            pygame.draw.circle(surface, self.color, (self.position[0], self.position[1]), round(self.mass**0.5 * PUCK_RADIUS, 2))
+            self.radius = self.mass**0.5 * PUCK_RADIUS
 
     def get_pos(self):
         '''Get puck position'''
         return (self.position[0],self.position[1])
 
-    def col_circle(self, circlepos):
+    def col_circle(self, PUCK):
         '''Checking for collision with another puck'''
         x1, y1 = self.position
-        x2, y2 = circlepos
+        x2, y2 = PUCK.position
+
+        distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+
+        if distance <= self.radius + PUCK.radius:
+            return True
+        return False
+
+    def col_mouse(self, pos):
+        '''Checking for collision with another puck'''
+        x1, y1 = self.position
+        x2, y2 = pos
 
         distance = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
 

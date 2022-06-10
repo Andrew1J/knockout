@@ -186,6 +186,7 @@ def collision_response(puck1, puck2):
     x2,y2 = puck2.position
     ki = 0.5 * m1 * (vx1i**2 + vy1i**2) + 0.5 * m2 * (vx2i**2 + vy2i**2)
     kf = elasticity * ki
+    #TODO Implement elasticity component
 
     const1 = ((2*m2) / (m1 + m2)) * (dot_product([vx1i-vx2i, vy1i-vy2i], [x1-x2, y1-y2])) / (magnitude_squared([x1-x2, y1-y2])+.000001)
     vx1f = vx1i - (const1 * (x1-x2))
@@ -200,7 +201,7 @@ def collision_response(puck1, puck2):
 
 def display_buttons():
     ''' Display field and buttons to change physical variables '''
-    
+
     # Display elasticity text
     smallfont = pygame.font.SysFont('Corbel', 35)
     text = smallfont.render('Elasticity: ' + str(elasticity), True , (255,255,255))
@@ -307,7 +308,7 @@ def main():
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check for mouse click
                     pos1 = pygame.mouse.get_pos()
 
-                    clicked_sprites = [puck for puck in PUCKS if puck.col_circle(pos1)]
+                    clicked_sprites = [puck for puck in PUCKS if puck.col_mouse(pos1)]
 
                     for puck in clicked_sprites:
                         if ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
@@ -383,14 +384,14 @@ def main():
                         if ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
                             puck.click()
 
-                    if 23*SCREEN_WIDTH/24 - BUTTON_WIDTH <= x <= 23*SCREEN_WIDTH/24 and SCREEN_HEIGHT/16 - BUTTON_HEIGHT/2 <= y <= SCREEN_HEIGHT/16 + BUTTON_HEIGHT/2: 
+                    if 23*SCREEN_WIDTH/24 - BUTTON_WIDTH <= x <= 23*SCREEN_WIDTH/24 and SCREEN_HEIGHT/16 - BUTTON_HEIGHT/2 <= y <= SCREEN_HEIGHT/16 + BUTTON_HEIGHT/2:
                         DRAW_ARROW_STATE = False
                         PLAYERONETURN = True
 
                 if (event.type == pygame.KEYDOWN and event.key == pygame.K_q) or event.type == pygame.QUIT: # Check for game quit()
                     running = False
                     quit()
-                
+
                 display_information(PUCKS)
                 display_buttons()
 
@@ -416,7 +417,7 @@ def main():
             # Check for collisions
             for i in range(len(PUCKS)):
                 for j in range(i+1, len(PUCKS)):
-                    if PUCKS[i].col_circle(PUCKS[j].position): # Check for collision
+                    if PUCKS[i].col_circle(PUCKS[j]): # Check for collision
                         v1f, v2f = collision_response(PUCKS[i], PUCKS[j]) # Calculate the new velocities
                         PUCKS[i].velocity = v1f
                         PUCKS[j].velocity = v2f
@@ -469,7 +470,7 @@ def main():
                 puck.draw(SCREEN)
                 img = smallfont.render(str(puck.id) , True , (255,255,255))
                 imgx, imgy = img.get_size()
-                SCREEN.blit(img , (puck.position[0] - puck.radius/4, puck.position[1] - puck.radius/4))
+                SCREEN.blit(img , (puck.position[0] - 5, puck.position[1] - 5))
             else:
                 puck.velocity = (0,0)
 
