@@ -46,9 +46,6 @@ def setup_lvl1():
     puck5 = Puck((startx + 2 * offset, starty + offset), (0,0),(255,0,0), 1.0, 2, PUCK_RADIUS, "E")
     puck6 = Puck((startx + 2 * offset, starty + 2*offset), (0,0),(255,0,0), 1.0, 2, PUCK_RADIUS, "F")
 
-    # PUCKS[i].radius = ((PUCKS[i].mass)**0.5 * PUCKS[i].radius)
-    # PUCKS[i].radius = round((PUCKS[i].mass)**0.5 * PUCKS[i].radius, 2)
-
     # Add pucks to the list of pucks
     PUCKS.append(puck1)
     PUCKS.append(puck2)
@@ -78,11 +75,6 @@ def draw_background():
 
 def display_information(pucks):
     ''' Displays the live velocities of each puck in the side bar '''
-
-    # TODO Incorporate mass component and have the radius of the puck change accordingly
-    # Copy elasticity button structure
-    # Update puck.mass
-    # Update puck.radius based on formula (pir^2h but h is set to be 1 and density is uniform so increasing mass by a factor of 2 will increase radius by a factor of sq2)
 
     smallfont = pygame.font.SysFont('Corbel',20)
     for i in range(len(pucks)):
@@ -184,17 +176,15 @@ def collision_response(puck1, puck2):
     m2 = puck2.mass
     x1,y1 = puck1.position
     x2,y2 = puck2.position
-    ki = 0.5 * m1 * (vx1i**2 + vy1i**2) + 0.5 * m2 * (vx2i**2 + vy2i**2)
-    kf = elasticity * ki
     #TODO Implement elasticity component
 
     const1 = ((2*m2) / (m1 + m2)) * (dot_product([vx1i-vx2i, vy1i-vy2i], [x1-x2, y1-y2])) / (magnitude_squared([x1-x2, y1-y2])+.000001)
-    vx1f = vx1i - (const1 * (x1-x2))
-    vy1f = vy1i - (const1 * (y1-y2))
+    vx1f = (elasticity ** 0.5) * (vx1i - (const1 * (x1-x2)))
+    vy1f = (elasticity ** 0.5) * (vy1i - (const1 * (y1-y2)))
 
     const2 = ((2*m1) / (m1 + m2)) * (dot_product([vx2i-vx1i, vy2i-vy1i], [x2-x1, y2-y1])) / (magnitude_squared([x2-x1, y2-y1])+.000001)
-    vx2f = vx2i - (const2 * (x2-x1))
-    vy2f = vy2i - (const2 * (y2-y1))
+    vx2f = (elasticity ** 0.5) * (vx2i - (const2 * (x2-x1)))
+    vy2f = (elasticity ** 0.5) * (vy2i - (const2 * (y2-y1)))
 
     return [vx1f, vy1f], [vx2f, vy2f]
 
@@ -263,7 +253,7 @@ def main():
         # End game if no pucks are left
         if len(PUCKS) == 0:
             running = False
-        
+
         if DRAW_ARROW_STATE: # Drawing arrows phase
 
             # Check whose turn it is
@@ -325,7 +315,7 @@ def main():
                         print("elasticity const was increased and is now " + str(elasticity))
 
                     # elasticity decrease button
-                    if elasticity >= 0.05 and 4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 5.1 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5.1 * (SCREEN_HEIGHT/6)+40:
+                    if elasticity > 0.05 and 4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 5.1 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5.1 * (SCREEN_HEIGHT/6)+40:
                         elasticity -= 0.05
                         elasticity = round(elasticity,2)
                         print("elasticity const was decreased and is now " + str(elasticity))
@@ -397,7 +387,6 @@ def main():
 
         else: # Check for collisions after shooting the pucks
 
-            # TODO: Puck gets removed if its out of bounds
             puckscopy = PUCKS.copy()
             for i in range(len(puckscopy)):
                 x,y = puckscopy[i].position
@@ -411,7 +400,7 @@ def main():
                     if PUCKS[i].position == arrow[0]:
                         PUCKS[i].velocity = (arrow[1][0] * ARROW_SPEED_CONSTANT, arrow[1][1] * ARROW_SPEED_CONSTANT)
                 PUCKS[i].hasLine = False
-            
+
             ARROWS = []
 
             # Check for collisions
@@ -474,8 +463,6 @@ def main():
             else:
                 puck.velocity = (0,0)
 
-        # Display end game screen if pucks fall off
-        # TODO IMPLEMENT GAME RESTART
         if game_end(PUCKS):
             running = False
 
