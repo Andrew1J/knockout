@@ -114,7 +114,7 @@ def game_end(pucks):
         if puck.player == 2 and puck.onField:
             cntp2 += 1
     if cntp1 == 0:
-        SCREEN.fill((0, 0, 255))
+        SCREEN.fill((0, 94, 184))
         draw_island()
 
         for puck in PUCKS:
@@ -132,7 +132,7 @@ def game_end(pucks):
 
         return True
     if cntp2 == 0:
-        SCREEN.fill((0, 0, 255))
+        SCREEN.fill((0, 94, 184))
         draw_island()
 
         for puck in PUCKS:
