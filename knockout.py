@@ -56,12 +56,12 @@ def setup_lvl1():
 
 
 def draw_island():
-    pygame.draw.rect(SCREEN, (0,255,0), [SCREEN_WIDTH/12, SCREEN_HEIGHT/8, ISLAND_WIDTH, ISLAND_HEIGHT])
+    pygame.draw.rect(SCREEN, (48,200,0), [SCREEN_WIDTH/12, SCREEN_HEIGHT/8, ISLAND_WIDTH, ISLAND_HEIGHT])
 
 
 def draw_background():
     # Draw Water
-    SCREEN.fill((0, 0, 255))
+    SCREEN.fill((0, 94, 184))
 
     # Draw Buttons
     display_buttons()
