@@ -13,7 +13,7 @@ To play this game, TODO
 - Each player starts three pucks on one side of the field. 
 - Set up the field by selecting the field type, elasticity constant, and masses of each puck by using `LEFT CLICK` on the provided buttons.
 - Using `CURSOR` and `LEFT CLICK`, Player A decides in which direction and with what speed each of their pucks will travel by drawing an arrow emanating from each of their pucks. Player B does the same. 
-- By clicking the Shoot button, the selected movements simultaneously occur and pucks that collide will have their trajectory altered accordingly based on physical laws. 
+- By using `LEFT CLICK` on the Shoot button, the selected movements simultaneously occur and pucks that collide will have their trajectory altered accordingly based on physical laws. 
 - All pucks eventually come to a stop due to friction. Pucks with an end position outside the field are eliminated and the state is reset for the next turn.
 - The player who eliminates all of their opponent’s pucks first wins.
 - Players may reset the game by pressing `r`.
