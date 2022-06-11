@@ -37,12 +37,12 @@ def setup_lvl1():
     # Draw Pucks
     offset = ISLAND_WIDTH / 4
     startx, starty = SCREEN_WIDTH/12 + offset, SCREEN_HEIGHT/8 + offset
-    puck1 = Puck((startx, starty), (0,0),(255,0,255), 1.0, 1, PUCK_RADIUS, "A")
-    puck2 = Puck((startx, starty + offset), (0,0),(255,0,255), 1.0, 1, PUCK_RADIUS, "B")
-    puck3 = Puck((startx, starty + 2 * offset), (0,0),(255,0,255), 1.0, 1, PUCK_RADIUS, "C")
-    puck4 = Puck((startx + 2 * offset, starty), (0,0),(255,0,0), 1.0, 2, PUCK_RADIUS, "D")
-    puck5 = Puck((startx + 2 * offset, starty + offset), (0,0),(255,0,0), 1.0, 2, PUCK_RADIUS, "E")
-    puck6 = Puck((startx + 2 * offset, starty + 2*offset), (0,0),(255,0,0), 1.0, 2, PUCK_RADIUS, "F")
+    puck1 = Puck((startx, starty), (0,0),(255,0,255), 2.0, 1, PUCK_RADIUS, "A")
+    puck2 = Puck((startx, starty + offset), (0,0),(255,0,255), 2.0, 1, PUCK_RADIUS, "B")
+    puck3 = Puck((startx, starty + 2 * offset), (0,0),(255,0,255), 2.0, 1, PUCK_RADIUS, "C")
+    puck4 = Puck((startx + 2 * offset, starty), (0,0),(255,0,0), 2.0, 2, PUCK_RADIUS, "D")
+    puck5 = Puck((startx + 2 * offset, starty + offset), (0,0),(255,0,0), 2.0, 2, PUCK_RADIUS, "E")
+    puck6 = Puck((startx + 2 * offset, starty + 2*offset), (0,0),(255,0,0), 2.0, 2, PUCK_RADIUS, "F")
 
     # Add pucks to the list of pucks
     PUCKS.append(puck1)
@@ -309,7 +309,7 @@ def main():
                     x,y = (pygame.mouse.get_pos()[0],pygame.mouse.get_pos()[1])
 
                     # elasticity increase button
-                    if elasticity <= 0.95 and 2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 5.1 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5.1 * (SCREEN_HEIGHT/6)+40:
+                    if elasticity < 1.0 and 2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 5.1 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5.1 * (SCREEN_HEIGHT/6)+40:
                         elasticity += 0.05
                         elasticity = round(elasticity,2)
                         print("elasticity const was increased and is now " + str(elasticity))
@@ -342,12 +342,12 @@ def main():
 
                     # mass buttons
                     for i in range(len(PUCKS)):
-                        if PUCKS[i].mass <= 4.9 and 78 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 78 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.3) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.3) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
+                        if PUCKS[i].mass < 3.0 and 78 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 78 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.3) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.3) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
                             PUCKS[i].mass += 0.1
                             PUCKS[i].mass = round(PUCKS[i].mass, 2)
                             print('mass for ' + str(i) + ' was increased and is now ' + str(round(PUCKS[i].mass,2)))
 
-                        if PUCKS[i].mass >= 0.2 and 91 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 91 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.3) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.3) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
+                        if PUCKS[i].mass > 1.0 and 91 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 91 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.3) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.3) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
                             PUCKS[i].mass -= 0.1
                             PUCKS[i].mass = round(PUCKS[i].mass, 2)
                             print('mass for ' + str(i) + ' was decreased and is now ' + str(round(PUCKS[i].mass,2)))
@@ -380,7 +380,7 @@ def main():
 
                 if (event.type == pygame.KEYDOWN and event.key == pygame.K_q) or event.type == pygame.QUIT: # Check for game quit()
                     running = False
-                    quit()
+                    sys.exit()
 
                 display_information(PUCKS)
                 display_buttons()
@@ -410,22 +410,6 @@ def main():
                         v1f, v2f = collision_response(PUCKS[i], PUCKS[j]) # Calculate the new velocities
                         PUCKS[i].velocity = v1f
                         PUCKS[j].velocity = v2f
-
-                        # # CHECK X POSITION
-                        if PUCKS[i].position[0] < PUCKS[j].position[0] and abs(v1f[0]) > abs(v2f[0]):
-                            print("big on left")
-                            PUCKS[j].velocity = (PUCKS[i].velocity[0] + .1, PUCKS[j].velocity[1])
-                        elif PUCKS[i].position[0] > PUCKS[j].position[0] and abs(v2f[0]) < abs(v1f[0]):
-                            print("big on right")
-                            PUCKS[j].velocity = (PUCKS[i].velocity[0] - .1, PUCKS[j].velocity[1])
-                        
-                        # CHECK Y POSITION
-                        if PUCKS[i].position[1] < PUCKS[j].position[1] and abs(v1f[1]) > abs(v2f[1]):
-                            print("big on top")
-                            PUCKS[j].velocity = (PUCKS[j].velocity[0], PUCKS[i].velocity[1] + .1)
-                        elif PUCKS[i].position[1] > PUCKS[j].position[1] and abs(v2f[1]) > abs(v1f[1]):
-                            print("big on bottom")
-                            PUCKS[j].velocity = (PUCKS[j].velocity[0], PUCKS[i].velocity[1] - .1)
 
                         print(PUCKS[i].velocity)
                         print(PUCKS[j].velocity)
