@@ -23,7 +23,7 @@ ARROWS = []
 GRAVITY = -9.8
 ARROW_SPEED_CONSTANT = 0.025
 mu = 0.3
-elasticity = 1
+elasticity = .05
 
 
 # Set Up Levels
@@ -39,7 +39,7 @@ def setup_lvl1():
     # Draw Pucks
     offset = ISLAND_WIDTH / 4
     startx, starty = SCREEN_WIDTH/12 + offset, SCREEN_HEIGHT/8 + offset
-    puck1 = Puck((startx, starty), (0,0),(255,0,255), 1.0, 1, PUCK_RADIUS, "A")
+    puck1 = Puck((startx, starty), (0,0),(255,0,255), 3.0, 1, PUCK_RADIUS, "A")
     puck2 = Puck((startx, starty + offset), (0,0),(255,0,255), 1.0, 1, PUCK_RADIUS, "B")
     puck3 = Puck((startx, starty + 2 * offset), (0,0),(255,0,255), 1.0, 1, PUCK_RADIUS, "C")
     puck4 = Puck((startx + 2 * offset, starty), (0,0),(255,0,0), 1.0, 2, PUCK_RADIUS, "D")
@@ -177,6 +177,7 @@ def collision_response(puck1, puck2):
     x1,y1 = puck1.position
     x2,y2 = puck2.position
     #TODO Implement elasticity component
+    print((elasticity ** 0.5))
 
     const1 = ((2*m2) / (m1 + m2)) * (dot_product([vx1i-vx2i, vy1i-vy2i], [x1-x2, y1-y2])) / (magnitude_squared([x1-x2, y1-y2])+.000001)
     vx1f = (elasticity ** 0.5) * (vx1i - (const1 * (x1-x2)))
@@ -185,7 +186,7 @@ def collision_response(puck1, puck2):
     const2 = ((2*m1) / (m1 + m2)) * (dot_product([vx2i-vx1i, vy2i-vy1i], [x2-x1, y2-y1])) / (magnitude_squared([x2-x1, y2-y1])+.000001)
     vx2f = (elasticity ** 0.5) * (vx2i - (const2 * (x2-x1)))
     vy2f = (elasticity ** 0.5) * (vy2i - (const2 * (y2-y1)))
-
+    
     return [vx1f, vy1f], [vx2f, vy2f]
 
 
@@ -244,6 +245,7 @@ def main():
     # Set up the level
     setup_lvl1()
     display_information(PUCKS)
+
 
     # MAIN GAME LOOP
     running = True
@@ -410,6 +412,25 @@ def main():
                         v1f, v2f = collision_response(PUCKS[i], PUCKS[j]) # Calculate the new velocities
                         PUCKS[i].velocity = v1f
                         PUCKS[j].velocity = v2f
+
+                        # # CHECK X POSITION
+                        if PUCKS[i].position[0] < PUCKS[j].position[0] and abs(v1f[0]) > abs(v2f[0]):
+                            print("big on left")
+                            PUCKS[j].velocity = (PUCKS[i].velocity[0] + .2, PUCKS[j].velocity[1])
+                        elif PUCKS[i].position[0] > PUCKS[j].position[0] and abs(v2f[0]) < abs(v1f[0]):
+                            print("big on right")
+                            PUCKS[j].velocity = (PUCKS[i].velocity[0] - .2, PUCKS[j].velocity[1])
+                        
+                        # CHECK Y POSITION
+                        if PUCKS[i].position[1] < PUCKS[j].position[1] and abs(v1f[1]) > abs(v2f[1]):
+                            print("big on top")
+                            PUCKS[j].velocity = (PUCKS[j].velocity[0], PUCKS[i].velocity[1] + .2)
+                        elif PUCKS[i].position[1] > PUCKS[j].position[1] and abs(v2f[1]) > abs(v1f[1]):
+                            print("big on bottom")
+                            PUCKS[j].velocity = (PUCKS[j].velocity[0], PUCKS[i].velocity[1] - .2)
+
+                        print(PUCKS[i].velocity)
+                        print(PUCKS[j].velocity)
 
             # Apply frictional accelerations to the velocities
             for puck in PUCKS:
