@@ -23,4 +23,6 @@ To play this game, TODO
 - Arthur Liang
 
 ## Screenshots
-TODO
+![default](https://github.com/Andrew1J/knockout/blob/main/screenshots/default.png)
+![mid](https://github.com/Andrew1J/knockout/blob/main/screenshots/mid.png)
+![end](https://github.com/Andrew1J/knockout/blob/main/screenshots/default.png)
