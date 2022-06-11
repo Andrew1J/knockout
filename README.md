@@ -24,5 +24,5 @@ To play this game, TODO
 
 ## Screenshots
 ![default](https://github.com/Andrew1J/knockout/blob/main/screenshots/default.png)
-![mid](https://github.com/Andrew1J/knockout/blob/main/screenshots/mid.png)
-![end](https://github.com/Andrew1J/knockout/blob/main/screenshots/default.png)
+![playing](https://github.com/Andrew1J/knockout/blob/main/screenshots/playing.png)
+![end](https://github.com/Andrew1J/knockout/blob/main/screenshots/end.png)
