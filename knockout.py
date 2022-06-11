@@ -21,6 +21,7 @@ ARROWS = []
 GRAVITY = -9.8
 ARROW_SPEED_CONSTANT = 0.025
 mu = 0.3
+field_type = 'Ground'
 elasticity = 1.0
 
 
@@ -54,7 +55,16 @@ def setup_lvl1():
 
 
 def draw_island():
-    pygame.draw.rect(SCREEN, (48,200,0), [SCREEN_WIDTH/12, SCREEN_HEIGHT/8, ISLAND_WIDTH, ISLAND_HEIGHT])
+    if field_type == 'Ice':
+        pygame.draw.rect(SCREEN, (200,233,233), [SCREEN_WIDTH/12, SCREEN_HEIGHT/8, ISLAND_WIDTH, ISLAND_HEIGHT])
+    elif field_type == 'Horseshoe':
+        pygame.draw.rect(SCREEN, (136,139,141), [SCREEN_WIDTH/12, SCREEN_HEIGHT/8, ISLAND_WIDTH, ISLAND_HEIGHT])
+    elif field_type == 'Asphalt':
+        pygame.draw.rect(SCREEN, (31,32,34), [SCREEN_WIDTH/12, SCREEN_HEIGHT/8, ISLAND_WIDTH, ISLAND_HEIGHT])
+    elif field_type == 'Concrete':
+        pygame.draw.rect(SCREEN, (118,134,146), [SCREEN_WIDTH/12, SCREEN_HEIGHT/8, ISLAND_WIDTH, ISLAND_HEIGHT])
+    else:
+        pygame.draw.rect(SCREEN, (48,200,0), [SCREEN_WIDTH/12, SCREEN_HEIGHT/8, ISLAND_WIDTH, ISLAND_HEIGHT])
 
 
 def draw_background():
@@ -184,7 +194,7 @@ def collision_response(puck1, puck2):
     const2 = ((2*m1) / (m1 + m2)) * (dot_product([vx2i-vx1i, vy2i-vy1i], [x2-x1, y2-y1])) / (magnitude_squared([x2-x1, y2-y1])+.000001)
     vx2f = (elasticity ** 0.5) * (vx2i - (const2 * (x2-x1)))
     vy2f = (elasticity ** 0.5) * (vy2i - (const2 * (y2-y1)))
-    
+
     return [vx1f, vy1f], [vx2f, vy2f]
 
 
@@ -215,21 +225,22 @@ def display_buttons():
     SCREEN.blit(text, (4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 + 30, 5.1 * (SCREEN_HEIGHT/6) + 5))
 
     # Display field type buttons
-    field_types = ['Ice', 'Steel', 'Rock', 'Wool']
+    field_types = ['Ice', 'Horseshoe', 'Asphalt', 'Concrete']
     for i, mat in enumerate(field_types):
         text = smallfont.render(mat , True , (255,255,255))
+        textx, texty = text.get_size()
         if i % 2 == 0:
             if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.8 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
                 pygame.draw.rect(SCREEN, (170,170,170),[(i+1) * (SCREEN_WIDTH/6),5.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
             else:
                 pygame.draw.rect(SCREEN, (100,100,100),[(i+1) * (SCREEN_WIDTH/6),5.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
-            SCREEN.blit(text, ((i+1) * (SCREEN_WIDTH/6) + 40, 5.5 * (SCREEN_HEIGHT/6) + 5))
+            SCREEN.blit(text, ((i+1.5) * (SCREEN_WIDTH/6) - textx/2, 5.5 * (SCREEN_HEIGHT/6) + 5))
         else:
             if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.8 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
                 pygame.draw.rect(SCREEN, (170,170,170),[(i+1) * (SCREEN_WIDTH/6),5.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
             else:
                 pygame.draw.rect(SCREEN, (50,50,50),[(i+1) * (SCREEN_WIDTH/6),5.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
-            SCREEN.blit(text, ((i+1) * (SCREEN_WIDTH/6) + 40, 5.5 * (SCREEN_HEIGHT/6) + 5))
+            SCREEN.blit(text, ((i+1.5) * (SCREEN_WIDTH/6) - textx/2, 5.5 * (SCREEN_HEIGHT/6) + 5))
 
 
 def main():
@@ -288,6 +299,7 @@ def main():
             for event in pygame.event.get():
                 global mu
                 global elasticity
+                global field_type
 
                 smallfont = pygame.font.SysFont('Corbel', 25)
                 text = smallfont.render('Shoot', True , (255,255,255))
@@ -322,22 +334,26 @@ def main():
 
                     # ice button
                     if SCREEN_WIDTH/6 <= pos2[0] <= SCREEN_WIDTH/6+BUTTON_WIDTH and 5.5*SCREEN_HEIGHT/6 <= pos2[1] <= 5.5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
-                        mu = 0.3
+                        mu = 0.15
+                        field_type = 'Ice'
                         print("mu was set to " + str(mu))
 
-                    # steel button
+                    # horseshoe button
                     if 2*SCREEN_WIDTH/6 <= pos2[0] <= 2*SCREEN_WIDTH/6+BUTTON_WIDTH and 5.5*SCREEN_HEIGHT/6 <= pos2[1] <= 5.5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
-                        mu = 0.4
+                        mu = 0.7
+                        field_type = 'Horseshoe'
                         print("mu was set to " + str(mu))
 
-                    # rock button
+                    # asphalt button
                     if 3*SCREEN_WIDTH/6 <= pos2[0] <= 3*SCREEN_WIDTH/6+BUTTON_WIDTH and 5.5*SCREEN_HEIGHT/6 <= pos2[1] <= 5.5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
                         mu = 0.5
+                        field_type = 'Asphalt'
                         print("mu was set to " + str(mu))
 
-                    # wool button
+                    # concrete button
                     if 4*SCREEN_WIDTH/6 <= pos2[0] <= 4*SCREEN_WIDTH/6+BUTTON_WIDTH and 5.5*SCREEN_HEIGHT/6 <= pos2[1] <= 5.5*SCREEN_HEIGHT/6+BUTTON_HEIGHT:
-                        mu = 0.9
+                        mu = 0.8
+                        field_type = 'Concrete'
                         print("mu was set to " + str(mu))
 
                     # mass buttons
