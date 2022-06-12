@@ -99,14 +99,14 @@ def display_information(pucks):
 
         # Display increase and decrease buttons
         text = smallfont.render('+' , True , (255,255,255))
-        if 78 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 78 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.3) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.5) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
+        if 78 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 78 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.3) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.3) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
             pygame.draw.rect(SCREEN, (170,170,170),[78 * SCREEN_WIDTH/100, (i+1.3) * (SCREEN_HEIGHT/9), BUTTON_WIDTH/4, BUTTON_HEIGHT/2], border_radius = 10)
         else:
             pygame.draw.rect(SCREEN, (100,100,100),[78 * SCREEN_WIDTH/100, (i+1.3) * (SCREEN_HEIGHT/9), BUTTON_WIDTH/4, BUTTON_HEIGHT/2], border_radius = 10)
         SCREEN.blit(text, (82 * SCREEN_WIDTH/100 - BUTTON_WIDTH/8, (i+1.3) * (SCREEN_HEIGHT/9)))
 
         text = smallfont.render('-' , True , (255,255,255))
-        if 91 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 91 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.3) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.5) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
+        if 91 * SCREEN_WIDTH/100 <= pygame.mouse.get_pos()[0] <= 91 * SCREEN_WIDTH/100 + BUTTON_WIDTH/4 and (i+1.3) * (SCREEN_HEIGHT/9) <= pygame.mouse.get_pos()[1] <= (i+1.3) * (SCREEN_HEIGHT/9) + BUTTON_HEIGHT/2:
             pygame.draw.rect(SCREEN, (170,170,170),[91 * SCREEN_WIDTH/100, (i+1.3) * (SCREEN_HEIGHT/9), BUTTON_WIDTH/4, BUTTON_HEIGHT/2], border_radius = 10)
         else:
             pygame.draw.rect(SCREEN, (100,100,100),[91 * SCREEN_WIDTH/100, (i+1.3) * (SCREEN_HEIGHT/9), BUTTON_WIDTH/4, BUTTON_HEIGHT/2], border_radius = 10)
@@ -230,13 +230,13 @@ def display_buttons():
         text = smallfont.render(mat , True , (255,255,255))
         textx, texty = text.get_size()
         if i % 2 == 0:
-            if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.8 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
+            if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5.5 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
                 pygame.draw.rect(SCREEN, (170,170,170),[(i+1) * (SCREEN_WIDTH/6),5.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
             else:
                 pygame.draw.rect(SCREEN, (100,100,100),[(i+1) * (SCREEN_WIDTH/6),5.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
             SCREEN.blit(text, ((i+1.5) * (SCREEN_WIDTH/6) - textx/2, 5.5 * (SCREEN_HEIGHT/6) + 5))
         else:
-            if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 4.8 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
+            if (i+1) * (SCREEN_WIDTH/6) <= pygame.mouse.get_pos()[0] <= (i+1) * (SCREEN_WIDTH/6) + BUTTON_WIDTH and 5.5 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5.5 * (SCREEN_HEIGHT/6) + BUTTON_HEIGHT:
                 pygame.draw.rect(SCREEN, (170,170,170),[(i+1) * (SCREEN_WIDTH/6),5.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])
             else:
                 pygame.draw.rect(SCREEN, (50,50,50),[(i+1) * (SCREEN_WIDTH/6),5.5 * (SCREEN_HEIGHT/6), BUTTON_WIDTH, BUTTON_HEIGHT])

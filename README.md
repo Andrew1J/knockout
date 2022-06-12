@@ -1,7 +1,7 @@
 # Knockout
 
 ## Description
-Knockout is a two-player game where players try to knock out each other's pucks in a turn-based manner. Players will observe how varying physical variables including the masses of individual pucks, elasticity of the collisions, and the frictional force (by changing the material the field is made out of) alters the mechanics of the game.
+Knockout is a two-player game where players try to knock out each other's pucks in a turn-based manner. Players will observe how varying physical variables including the masses of individual pucks, the elasticity of the collisions, and the frictional force (by changing the material the field is made out of) alters the mechanics of the game.
 
 ### Physics Concepts Incorporated
 - 2-Dimensional Collisions by Circular Objects of Varying Masses (elastic and inelastic)
