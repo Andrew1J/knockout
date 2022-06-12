@@ -22,7 +22,7 @@ GRAVITY = -9.8
 ARROW_SPEED_CONSTANT = 0.025
 mu = 0.3
 field_type = 'Ground'
-elasticity = 1.0
+elasticity = .05
 
 
 # Set Up Levels
@@ -38,7 +38,7 @@ def setup_lvl1():
     # Draw Pucks
     offset = ISLAND_WIDTH / 4
     startx, starty = SCREEN_WIDTH/12 + offset, SCREEN_HEIGHT/8 + offset
-    puck1 = Puck((startx, starty), (0,0),(255,0,255), 2.0, 1, PUCK_RADIUS, "A")
+    puck1 = Puck((startx, starty), (0,0),(255,0,255), 3.0, 1, PUCK_RADIUS, "A")
     puck2 = Puck((startx, starty + offset), (0,0),(255,0,255), 2.0, 1, PUCK_RADIUS, "B")
     puck3 = Puck((startx, starty + 2 * offset), (0,0),(255,0,255), 2.0, 1, PUCK_RADIUS, "C")
     puck4 = Puck((startx + 2 * offset, starty), (0,0),(255,0,0), 2.0, 2, PUCK_RADIUS, "D")
@@ -426,6 +426,40 @@ def main():
                         v1f, v2f = collision_response(PUCKS[i], PUCKS[j]) # Calculate the new velocities
                         PUCKS[i].velocity = v1f
                         PUCKS[j].velocity = v2f
+
+                        v1fmagnitude = math.sqrt(v1f[0]**2 + v1f[1]**2)
+                        v2fmagnitude = math.sqrt(v2f[0]**2 + v2f[1]**2)
+
+                        if PUCKS[i].position[0] < PUCKS[j].position[0] and v1fmagnitude > v2fmagnitude:
+                            print("big on left")
+                            PUCKS[j].velocity = (PUCKS[i].velocity[0] + .2, PUCKS[j].velocity[1])
+                        elif PUCKS[i].position[0] > PUCKS[j].position[0] and v2fmagnitude < v1fmagnitude:
+                            print("big on right")
+                            PUCKS[j].velocity = (PUCKS[i].velocity[0] - .2, PUCKS[j].velocity[1])
+
+                        if PUCKS[i].position[1] < PUCKS[j].position[1] and v1fmagnitude < v2fmagnitude:
+                            print("big on top")
+                            PUCKS[j].velocity = (PUCKS[j].velocity[0], PUCKS[i].velocity[1] + .2)
+                        elif PUCKS[i].position[1] > PUCKS[j].position[1] and v2fmagnitude > v1fmagnitude:
+                            print("big on bottom")
+                            PUCKS[j].velocity = (PUCKS[j].velocity[0], PUCKS[i].velocity[1] - .2)
+
+                        # # CHECK X POSITION
+                        # if PUCKS[i].position[0] < PUCKS[j].position[0] and v1f[0] > v2f[0]:
+                        #     print("big on left")
+                        #     PUCKS[j].velocity = (PUCKS[i].velocity[0] + .2, PUCKS[j].velocity[1])
+                        # elif PUCKS[i].position[0] > PUCKS[j].position[0] and v2f[0] < v1f[0]:
+                        #     print("big on right")
+                        #     PUCKS[j].velocity = (PUCKS[i].velocity[0] - .2, PUCKS[j].velocity[1])
+
+                        # # CHECK Y POSITION
+                        # if PUCKS[i].position[1] < PUCKS[j].position[1] and v1f[1] < v2f[1]:
+                        #     print("big on top")
+                        #     PUCKS[j].velocity = (PUCKS[j].velocity[0], PUCKS[i].velocity[1] + .2)
+                        # elif PUCKS[i].position[1] > PUCKS[j].position[1] and v2f[1] > v1f[1]:
+                        #     print("big on bottom")
+                        #     PUCKS[j].velocity = (PUCKS[j].velocity[0], PUCKS[i].velocity[1] - .2)
+
 
                         print(PUCKS[i].velocity)
                         print(PUCKS[j].velocity)
