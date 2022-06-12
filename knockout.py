@@ -22,7 +22,7 @@ GRAVITY = -9.8
 ARROW_SPEED_CONSTANT = 0.025
 mu = 0.3
 field_type = 'Ground'
-elasticity = .05
+elasticity = 1.0
 
 
 # Set Up Levels
@@ -38,7 +38,7 @@ def setup_lvl1():
     # Draw Pucks
     offset = ISLAND_WIDTH / 4
     startx, starty = SCREEN_WIDTH/12 + offset, SCREEN_HEIGHT/8 + offset
-    puck1 = Puck((startx, starty), (0,0),(255,0,255), 3.0, 1, PUCK_RADIUS, "A")
+    puck1 = Puck((startx, starty), (0,0),(255,0,255), 2.0, 1, PUCK_RADIUS, "A")
     puck2 = Puck((startx, starty + offset), (0,0),(255,0,255), 2.0, 1, PUCK_RADIUS, "B")
     puck3 = Puck((startx, starty + 2 * offset), (0,0),(255,0,255), 2.0, 1, PUCK_RADIUS, "C")
     puck4 = Puck((startx + 2 * offset, starty), (0,0),(255,0,0), 2.0, 2, PUCK_RADIUS, "D")
@@ -267,6 +267,53 @@ def main():
 
         if DRAW_ARROW_STATE: # Drawing arrows phase
 
+            for i in range(len(PUCKS)):
+                for j in range(i+1, len(PUCKS)):
+                    if PUCKS[i].col_circle(PUCKS[j]): # Check for collision
+                        x1,y1 = PUCKS[i].position
+                        x2,y2 = PUCKS[j].position
+                        print(PUCKS[i].radius + PUCKS[j].radius)
+                        overlapdistance = PUCKS[i].radius + PUCKS[j].radius - (math.sqrt((x1-x2)**2 + (y1-y2)**2)) + 0.5
+
+                        # Calculate the angle of the overlap
+                        angle = math.atan(abs(y2-y1)/(abs(x2-x1) + .000001))
+
+                        if x1 < x2 and y1 < y2 and PUCKS[j].mass <= PUCKS[i].mass:
+                            PUCKS[j].position = (x2 + overlapdistance * math.cos(angle), y2 + overlapdistance * math.sin(angle))
+                        elif x1 < x2 and y1 < y2 and PUCKS[j].mass > PUCKS[i].mass:
+                            PUCKS[i].position = (x1 - overlapdistance * math.cos(angle), y1 - overlapdistance * math.sin(angle))
+
+                        elif x1 < x2 and y1 > y2 and PUCKS[j].mass <= PUCKS[i].mass:
+                            PUCKS[j].position = (x2 + overlapdistance * math.cos(angle), y2 - overlapdistance * math.sin(angle))
+                        elif x1 < x2 and y1 > y2 and PUCKS[j].mass > PUCKS[i].mass:
+                            PUCKS[i].position = (x1 - overlapdistance * math.cos(angle), y1 + overlapdistance * math.sin(angle))
+
+                        elif x1 > x2 and y1 < y2 and PUCKS[i].mass <= PUCKS[j].mass:
+                            PUCKS[i].position = (x1 + overlapdistance * math.cos(angle), y1 - overlapdistance * math.sin(angle))
+                        elif x1 > x2 and y1 < y2 and PUCKS[i].mass > PUCKS[j].mass:
+                            PUCKS[j].position = (x2 - overlapdistance * math.cos(angle), y2 + overlapdistance * math.sin(angle))
+
+                        elif x1 > x2 and y1 > y2 and PUCKS[i].mass <= PUCKS[j].mass:
+                            PUCKS[i].position = (x1 + overlapdistance * math.cos(angle), y1 + overlapdistance * math.sin(angle))
+                        elif x1 > x2 and y1 > y2 and PUCKS[i].mass > PUCKS[j].mass:
+                            PUCKS[j].position = (x2 - overlapdistance * math.cos(angle), y2 - overlapdistance * math.sin(angle))
+
+                        draw_background()
+                        draw_island()
+                        display_information(PUCKS)
+
+                        # Draw Pucks To Screen
+                        smallfont = pygame.font.SysFont('Corbel', 24)
+                        for puck in PUCKS:
+                            if puck.onField:
+                                puck.draw(SCREEN)
+                                img = smallfont.render(str(puck.id) , True , (255,255,255))
+                                imgx, imgy = img.get_size()
+                                SCREEN.blit(img , (puck.position[0] - 5, puck.position[1] - 5))
+                            else:
+                                puck.velocity = (0,0)
+
+
             # Check whose turn it is
             drawn_p1_sprites = [puck for puck in PUCKS if (puck.player == 1 and not puck.hasLine and puck.onField)]
             drawn_p2_sprites = [puck for puck in PUCKS if (puck.player == 2 and not puck.hasLine and puck.onField)]
@@ -295,17 +342,18 @@ def main():
                 imgx, imgy = img.get_size()
                 SCREEN.blit(img, (SCREEN_WIDTH/12 + ISLAND_WIDTH - imgx, SCREEN_HEIGHT/16 - imgy/2))
 
-            # Main Event Handling
-            for event in pygame.event.get():
-                global mu
-                global elasticity
-                global field_type
-
                 smallfont = pygame.font.SysFont('Corbel', 25)
                 text = smallfont.render('Shoot', True , (255,255,255))
                 mybutton = button.Button(SCREEN,23*SCREEN_WIDTH/24 - BUTTON_WIDTH / 2, SCREEN_HEIGHT/16,BUTTON_WIDTH,BUTTON_HEIGHT,(255,0,0),(128,0,0),"Shoot",(0,0,0),smallfont)
                 x,y = pygame.mouse.get_pos()
                 mybutton.draw(x,y)
+
+
+            # Main Event Handling
+            for event in pygame.event.get():
+                global mu
+                global elasticity
+                global field_type
 
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check for mouse click
                     pos1 = pygame.mouse.get_pos()
@@ -371,7 +419,6 @@ def main():
                     draw_background()
                     draw_island()
                     display_information(PUCKS)
-                    mybutton.draw(x,y)
 
                     for puck in clicked_sprites:
                         if not puck.hasLine and ((PLAYERONETURN and puck.player == 1) or (not PLAYERONETURN and puck.player == 2)):
@@ -427,36 +474,36 @@ def main():
                         PUCKS[i].velocity = v1f
                         PUCKS[j].velocity = v2f
 
-                        v1fmagnitude = math.sqrt(v1f[0]**2 + v1f[1]**2)
-                        v2fmagnitude = math.sqrt(v2f[0]**2 + v2f[1]**2)
+                        # v1fmagnitude = math.sqrt(v1f[0]**2 + v1f[1]**2)
+                        # v2fmagnitude = math.sqrt(v2f[0]**2 + v2f[1]**2)
 
-                        if PUCKS[i].position[0] < PUCKS[j].position[0] and v1fmagnitude > v2fmagnitude:
-                            print("big on left")
-                            PUCKS[j].velocity = (PUCKS[i].velocity[0] + .2, PUCKS[j].velocity[1])
-                        elif PUCKS[i].position[0] > PUCKS[j].position[0] and v2fmagnitude < v1fmagnitude:
-                            print("big on right")
-                            PUCKS[j].velocity = (PUCKS[i].velocity[0] - .2, PUCKS[j].velocity[1])
+                        # if PUCKS[i].position[0] < PUCKS[j].position[0] and v1fmagnitude > v2fmagnitude and np.sign(v1f[0]) == np.sign(v2f[0]):
+                        #     print("big on left")
+                        #     PUCKS[j].velocity = (PUCKS[i].velocity[0] + .1, PUCKS[j].velocity[1])
+                        # elif PUCKS[i].position[0] > PUCKS[j].position[0] and v2fmagnitude < v1fmagnitude and np.sign(v1f[0]) == np.sign(v2f[0]):
+                        #     print("big on right")
+                        #     PUCKS[j].velocity = (PUCKS[i].velocity[0] - .1, PUCKS[j].velocity[1])
 
-                        if PUCKS[i].position[1] < PUCKS[j].position[1] and v1fmagnitude < v2fmagnitude:
-                            print("big on top")
-                            PUCKS[j].velocity = (PUCKS[j].velocity[0], PUCKS[i].velocity[1] + .2)
-                        elif PUCKS[i].position[1] > PUCKS[j].position[1] and v2fmagnitude > v1fmagnitude:
-                            print("big on bottom")
-                            PUCKS[j].velocity = (PUCKS[j].velocity[0], PUCKS[i].velocity[1] - .2)
+                        # if PUCKS[i].position[1] < PUCKS[j].position[1] and v1fmagnitude < v2fmagnitude and np.sign(v1f[1]) == np.sign(v2f[1]):
+                        #     print("big on top")
+                        #     PUCKS[j].velocity = (PUCKS[j].velocity[0], PUCKS[i].velocity[1] + .1)
+                        # elif PUCKS[i].position[1] > PUCKS[j].position[1] and v2fmagnitude > v1fmagnitude and np.sign(v1f[1]) == np.sign(v2f[1]):
+                        #     print("big on bottom")
+                        #     PUCKS[j].velocity = (PUCKS[j].velocity[0], PUCKS[i].velocity[1] - .1)
 
                         # # CHECK X POSITION
-                        # if PUCKS[i].position[0] < PUCKS[j].position[0] and v1f[0] > v2f[0]:
+                        # if PUCKS[i].position[0] < PUCKS[j].position[0] and v1f[0] > v2f[0] and np.sign(v1f[0]) == np.sign(v2f[0]):
                         #     print("big on left")
                         #     PUCKS[j].velocity = (PUCKS[i].velocity[0] + .2, PUCKS[j].velocity[1])
-                        # elif PUCKS[i].position[0] > PUCKS[j].position[0] and v2f[0] < v1f[0]:
+                        # elif PUCKS[i].position[0] > PUCKS[j].position[0] and v2f[0] < v1f[0] and np.sign(v1f[0]) == np.sign(v2f[0]):
                         #     print("big on right")
                         #     PUCKS[j].velocity = (PUCKS[i].velocity[0] - .2, PUCKS[j].velocity[1])
 
                         # # CHECK Y POSITION
-                        # if PUCKS[i].position[1] < PUCKS[j].position[1] and v1f[1] < v2f[1]:
+                        # if PUCKS[i].position[1] < PUCKS[j].position[1] and v1f[1] < v2f[1] and np.sign(v1f[1]) == np.sign(v2f[1]):
                         #     print("big on top")
                         #     PUCKS[j].velocity = (PUCKS[j].velocity[0], PUCKS[i].velocity[1] + .2)
-                        # elif PUCKS[i].position[1] > PUCKS[j].position[1] and v2f[1] > v1f[1]:
+                        # elif PUCKS[i].position[1] > PUCKS[j].position[1] and v2f[1] > v1f[1] and np.sign(v1f[1]) == np.sign(v2f[1]):
                         #     print("big on bottom")
                         #     PUCKS[j].velocity = (PUCKS[j].velocity[0], PUCKS[i].velocity[1] - .2)
 
