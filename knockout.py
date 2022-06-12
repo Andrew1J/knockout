@@ -370,13 +370,13 @@ def main():
 
                     # elasticity increase button
                     if elasticity < 1.0 and 2 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 2 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 5.1 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5.1 * (SCREEN_HEIGHT/6)+40:
-                        elasticity += 0.05
+                        elasticity += 0.01
                         elasticity = round(elasticity,2)
                         print("elasticity const was increased and is now " + str(elasticity))
 
                     # elasticity decrease button
-                    if elasticity > 0.05 and 4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 5.1 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5.1 * (SCREEN_HEIGHT/6)+40:
-                        elasticity -= 0.05
+                    if elasticity > 0.80 and 4 * (SCREEN_WIDTH/6) - BUTTON_WIDTH/4 <= pygame.mouse.get_pos()[0] <= 4 * (SCREEN_WIDTH/6) + BUTTON_WIDTH/4 and 5.1 * (SCREEN_HEIGHT/6) <= pygame.mouse.get_pos()[1] <= 5.1 * (SCREEN_HEIGHT/6)+40:
+                        elasticity -= 0.01
                         elasticity = round(elasticity,2)
                         print("elasticity const was decreased and is now " + str(elasticity))
 
