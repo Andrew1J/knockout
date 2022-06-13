@@ -18,6 +18,14 @@ To play this game, TODO
 - The player who eliminates all of their opponent’s pucks first wins.
 - Players may reset the game by pressing `r`.
 
+## Run The Executable 
+1. Click on this link and download the executable.zip file https://drive.google.com/file/d/1Yya7hT6bhiJ_XD0KtULNM6kO29Ine88f/view?usp=sharing
+2. Go to your downloads folder and unzip the executable.zip (double click the executable.zip file),
+3. You should see a folder called build. Go into that folder and you should see another folder called exe.macosxblah. Click into that folder.
+4. You should see a bunch of .py and .dylib files. Look for the Unix Executable File called knockout and open/double click it. 
+5. If you get an unidentified developer warning, you into Security and Privacy in your settings and allow the file to be opened. 
+6. The game should open and you should be able to play. 
+
 ## Contributors
 - Andrew Juang
 - Arthur Liang
